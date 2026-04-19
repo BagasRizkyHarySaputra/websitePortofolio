@@ -161,4 +161,44 @@ const onDownloadCv = () => {
   cursor: pointer;
 }
 
+@media (orientation: portrait) {
+  .cv-cat {
+    width: 180cqw;
+  }
+
+  .cv-button {
+    margin-top: 1cqh;
+    border-radius: 1.2cqw;
+    font-size: 4.6cqw;
+    padding: 1.2cqh 5.2cqw;
+  }
+
+  .cv-popup {
+    width: 90cqw;
+    height: 88cqh;
+    border-width: 0.28cqw;
+    border-radius: 2.2cqw;
+    padding: 1.8cqh 2.2cqw 1.8cqh;
+    gap: 1.5cqh;
+  }
+
+  .cv-popup-close {
+    top: 0.9cqh;
+    right: 1.6cqw;
+    font-size: 7cqw;
+  }
+
+  .cv-popup-view {
+    margin-top: 4.8cqh;
+    border-width: 0.2cqw;
+    border-radius: 1.3cqw;
+  }
+
+  .cv-download {
+    border-radius: 1.2cqw;
+    font-size: 4.2cqw;
+    padding: 1.15cqh 6.3cqw;
+  }
+}
+
 </style>

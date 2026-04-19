@@ -1,12 +1,16 @@
 <script setup>
 import profileImage from "../assets/homepage-profile.png"
+import profileImageHpTall from "../assets/homepage-profile-hp-tall.png"
+import profileImageHpWide from "../assets/homepage-profile-hp-wide.png"
 </script>
 
 <template>
   <section class="homepage">
     <div class="homepage-stage">
       <div class="profile-backdrop" aria-hidden="true"></div>
-      <img class="profile-image" :src="profileImage" alt="Bagas profile" />
+      <img class="profile-image profile-image-landscape" :src="profileImage" alt="Bagas profile" />
+      <img class="profile-image profile-image-portrait-tall" :src="profileImageHpTall" alt="" aria-hidden="true" />
+      <img class="profile-image profile-image-portrait-wide" :src="profileImageHpWide" alt="" aria-hidden="true" />
 
       <h1 class="profile-name">Bagas Rizky Hary Saputra</h1>
       <p class="profile-role">cyber security Enthusiast</p>
@@ -54,11 +58,19 @@ import profileImage from "../assets/homepage-profile.png"
 
 .profile-image {
   position: absolute;
+}
+
+.profile-image-landscape {
   left: 7.65625%;
   top: 11.2037%;
   width: 20.83333%;
   height: 43.51852%;
   object-fit: cover;
+}
+
+.profile-image-portrait-tall,
+.profile-image-portrait-wide {
+  display: none;
 }
 
 .profile-name,
@@ -110,5 +122,122 @@ import profileImage from "../assets/homepage-profile.png"
 
 .profile-description-strong {
   color: #ffffff;
+}
+
+@media (orientation: portrait) {
+  .homepage-stage {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+  }
+
+  .profile-image-landscape {
+    display: none;
+  }
+
+  .profile-image-portrait-tall,
+  .profile-image-portrait-wide {
+    display: block;
+    left: 5.9455%;
+    top: 16.57165%;
+    object-fit: cover;
+    object-position: left top;
+  }
+
+  .profile-image-portrait-tall {
+    width: 27.00248%;
+    height: 55.79628%;
+    z-index: 1;
+  }
+
+  .profile-image-portrait-wide {
+    width: 34.35178%;
+    height: 44.05169%;
+    z-index: 2;
+  }
+
+  .profile-backdrop {
+    left: 7.01899%;
+    top: 21.24667%;
+    width: 28.07597%;
+    height: 52.07146%;
+    border-width: 0.22cqw;
+  }
+
+  .profile-name {
+    left: 40.32453%;
+    top: 20.94261%;
+    width: 56.23452%;
+    height: auto;
+    font-size: 4.9cqw;
+    line-height: 1;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .profile-role {
+    left: 40.57225%;
+    top: 24.17345%;
+    width: 53.8378%;
+    height: auto;
+    font-size: 3.6cqw;
+    line-height: 1;
+    text-align: left;
+  }
+
+  .profile-divider {
+    left: 40.44045%;
+    top: 24.04105%;
+    width: 35.19075%;
+    border-top-width: 0.22cqw;
+  }
+
+  .profile-description {
+    left: 40.48968%;
+    top: 27.54694%;
+    width: 53.92238%;
+    height: 34.96769%;
+    font-size: 5cqw;
+    line-height: 1.06;
+    text-align: justify;
+  }
+}
+
+@media (orientation: portrait) and (min-width: 700px) {
+  .homepage-stage {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 1211 / 2631;
+    transform: translate(-50%, -50%);
+  }
+
+  .profile-image-portrait-tall,
+  .profile-image-portrait-wide {
+    left: 5.9455%;
+    top: 14.8%;
+  }
+
+  .profile-image-portrait-tall {
+    width: 23.8%;
+    height: 60.4%;
+  }
+
+  .profile-image-portrait-wide {
+    width: 34.35178%;
+    height: 44.05169%;
+    object-position: right top;
+  }
+
+  .profile-backdrop {
+    left: 6.9%;
+    top: 20.5%;
+    width: 24.8%;
+    height: 58.5%;
+  }
 }
 </style>

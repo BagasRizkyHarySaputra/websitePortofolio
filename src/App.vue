@@ -249,4 +249,66 @@ onUnmounted(() => {
   width: 25%;
   height: 20%;
 }
+
+@media (orientation: portrait) {
+  .floating-logo-wrapper {
+    right: -5%;
+    bottom: 12%;
+    width: 22vw;
+    height: 12vw;
+    min-width: 88px;
+    min-height: 48px;
+  }
+
+  .floating-logo {
+    font-size: 3cqw;
+  }
+
+  .floating-nav-button {
+    font-size: 22cqw;
+    border-radius: 6.5cqw;
+    padding-inline: 48cqw;
+    padding-block: 18cqw;
+  }
+
+  .floating-nav-home {
+    padding-inline: 28cqw;
+    left: 30%;
+    top: -110%;
+    width: 47%;
+    height: 26%;
+  }
+
+  .floating-nav-about {
+    padding-inline: 48cqw;
+    left: -50%;
+    top: -80%;
+    width: 76%;
+    height: 26%;
+  }
+
+  .floating-nav-skills {
+    padding-inline: 40cqw;
+    left: -70%;
+    top: 0%;
+    width: 66%;
+    height: 25%;
+  }
+
+  .floating-nav-portofolio {
+    padding-inline: 50cqw;
+    left: -70%;
+    top: 80%;
+    width: 82%;
+    height: 25%;
+  }
+
+  .floating-nav-cv {
+    padding-inline: 20cqw;
+    left: -20%;
+    top: 160%;
+    width: 30%;
+    height: 22%;
+  }
+}
 </style>

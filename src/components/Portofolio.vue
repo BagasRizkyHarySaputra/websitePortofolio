@@ -414,4 +414,83 @@ onUnmounted(() => {
 .portofolio-description-line-bottom {
   top: 82.03704%;
 }
+
+@media (orientation: portrait) {
+  .portofolio-stage {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 1211 / 2631;
+    transform: translate(-50%, -50%);
+  }
+
+  .portofolio-badge {
+    left: 9.66144%;
+    top: 5.13113%;
+    width: 36.49876%;
+    height: 3.72482%;
+  }
+
+  .portofolio-title {
+    left: 13.45995%;
+    top: 5.62524%;
+    width: 29.7275%;
+    font-size: 5.4cqw;
+  }
+
+  .portofolio-preview {
+    left: 5.11974%;
+    top: 14.06309%;
+    width: 89.76053%;
+    height: 23.86925%;
+    border-radius: 1cqw;
+  }
+
+  .portofolio-slider-bar {
+    height: 15%;
+  }
+
+  .portofolio-description-label {
+    left: 13.45995%;
+    top: 40.59293%;
+    width: 29.7275%;
+    font-size: 4.8cqw;
+  }
+
+  .portofolio-description-line {
+    left: 9.66144%;
+    width: 80.67713%;
+    border-top-width: 0.2cqw;
+  }
+
+  .portofolio-description-line-top {
+    top: 44.39377%;
+  }
+
+  .portofolio-description-line-bottom {
+    top: 67.19878%;
+  }
+
+  .portofolio-description-scroll {
+    left: 13.45995%;
+    top: 46.18016%;
+    width: 73.5673%;
+    height: 19.57344%;
+    padding-right: 1.2cqw;
+  }
+
+  .portofolio-description-text {
+    font-size: 3.2cqw;
+  }
+
+  .portofolio-description-progress {
+    left: 88.43931%;
+    top: 46.18016%;
+    width: 0.55cqw;
+    height: 19.57344%;
+  }
+}
 </style>

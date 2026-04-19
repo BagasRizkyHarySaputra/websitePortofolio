@@ -157,4 +157,112 @@
     offset-distance: 100%;
   }
 }
+
+@keyframes skills-orbit-move-1 {
+  from {
+    offset-distance: 0%;
+  }
+
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes skills-orbit-move-2 {
+  from {
+    offset-distance: 25%;
+  }
+
+  to {
+    offset-distance: 125%;
+  }
+}
+
+@keyframes skills-orbit-move-3 {
+  from {
+    offset-distance: 50%;
+  }
+
+  to {
+    offset-distance: 150%;
+  }
+}
+
+@keyframes skills-orbit-move-4 {
+  from {
+    offset-distance: 75%;
+  }
+
+  to {
+    offset-distance: 175%;
+  }
+}
+
+@media (orientation: portrait) {
+  .skills-orbit {
+    display: block;
+    left: 6%;
+    top: 22%;
+    width: 88%;
+    height: 62%;
+    border-width: 0.32cqw;
+  }
+
+  .skills-intro {
+    left: 17%;
+    top: 12.5%;
+    width: 66%;
+    font-size: 4.5cqw;
+  }
+
+  .skills-orbit-item {
+    width: 48%;
+    offset-path: ellipse(44% 30% at 50% 53%);
+    offset-anchor: 50% 50%;
+    offset-rotate: 0deg;
+    animation-duration: 16s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-delay: 0s;
+  }
+
+  .orbit-item-1 {
+    animation-name: skills-orbit-move-1;
+  }
+
+  .orbit-item-2 {
+    animation-name: skills-orbit-move-2;
+  }
+
+  .orbit-item-3 {
+    animation-name: skills-orbit-move-3;
+  }
+
+  .orbit-item-4 {
+    animation-name: skills-orbit-move-4;
+  }
+
+  .orbit-item-text-regular,
+  .orbit-item-text-large {
+    font-size: 3.55cqw;
+  }
+
+  .skills-item-center {
+    left: 24%;
+    top: 49%;
+    width: 52%;
+    font-size: 4.1cqw;
+  }
+
+  .skills-line-center {
+    left: 24%;
+    top: 54.8%;
+    width: 52%;
+    border-top-width: 0.23cqw;
+  }
+
+  .skills-orbit-line {
+    border-top-width: 0.23cqw;
+  }
+}
 </style>

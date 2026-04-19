@@ -26,15 +26,17 @@ const scrollToSkills = () => {
 <template>
   <section class="hero-section">
     <div class="hero-stage">
-      <Logo class="hero-logo" />
+      <div class="hero-menu-group">
+        <Logo class="hero-logo" />
 
-      <h1 class="hero-title">BAGAS RIZKY HARY SAPUTRA</h1>
+        <h1 class="hero-title">BAGAS RIZKY HARY SAPUTRA</h1>
 
-      <button class="hero-nav-item hero-nav-home" type="button" @click="scrollToHomepage">HOME</button>
-      <button class="hero-nav-item hero-nav-about" type="button" @click="scrollToAboutMe">About Me</button>
-      <button class="hero-nav-item hero-nav-skills" type="button" @click="scrollToSkills">Skills</button>
+        <button class="hero-nav-item hero-nav-home" type="button" @click="scrollToHomepage">HOME</button>
+        <button class="hero-nav-item hero-nav-about" type="button" @click="scrollToAboutMe">About Me</button>
+        <button class="hero-nav-item hero-nav-skills" type="button" @click="scrollToSkills">Skills</button>
+      </div>
 
-      <p class="hero-scroll-text">scroll down!</p>
+      <p class="hero-scroll-text">scroll down!<br>click the skull at the bottom right</p>
       <div class="hero-chevron hero-chevron-top"></div>
       <div class="hero-chevron hero-chevron-bottom"></div>
     </div>
@@ -58,6 +60,10 @@ const scrollToSkills = () => {
   width: min(100vw, calc(100vh * 16 / 9));
   aspect-ratio: 16 / 9;
   container-type: size;
+}
+
+.hero-menu-group {
+  position: static;
 }
 
 .hero-logo {
@@ -197,5 +203,87 @@ const scrollToSkills = () => {
 :deep(.hero-logo .ascii-art) {
   font-size: 1.25cqw;
   line-height: 1;
+}
+
+@media (orientation: portrait) {
+  .hero-stage {
+    left: 0;
+    top: 0;
+    transform: none;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .hero-menu-group {
+    position: absolute;
+    left: 50%;
+    top: 15.8%;
+    transform: translateX(-50%);
+    width: 58%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.2cqh;
+  }
+
+  .hero-logo {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 78%;
+    height: 31cqh;
+  }
+
+  .hero-title {
+    display: none;
+  }
+
+  .hero-nav-item {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 72%;
+    height: 4.7cqh;
+    font-size: 8cqw;
+  }
+
+  .hero-nav-item::before {
+    inset: -16% -18%;
+  }
+
+  .hero-nav-home,
+  .hero-nav-about,
+  .hero-nav-skills {
+    width: 72%;
+    height: 4.7cqh;
+  }
+
+  .hero-scroll-text {
+    left: 8.25764%;
+    top: 84.49259%;
+    width: 83.48472%;
+    height: auto;
+    font-size: 5.2cqw;
+  }
+
+  .hero-chevron {
+    width: 1.65153%;
+    height: 0.8%;
+  }
+
+  .hero-chevron-top {
+    left: 49.21552%;
+    top: 92.93044%;
+  }
+
+  .hero-chevron-bottom {
+    left: 49.21552%;
+    top: 93.50057%;
+  }
+
+  :deep(.hero-logo .ascii-art) {
+    font-size: 2.2cqw;
+  }
 }
 </style>

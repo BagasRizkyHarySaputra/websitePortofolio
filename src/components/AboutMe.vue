@@ -232,4 +232,139 @@ const smallDecorations = [
   width: 18.90625%;
 }
 
+@media (orientation: portrait) {
+  .about-me-stage {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 1211 / 2631;
+    transform: translate(-50%, -50%);
+  }
+
+  .heading {
+    font-size: 4.2cqw;
+  }
+
+  .heading-background {
+    left: 14.53348%;
+    top: 16.87571%;
+    width: 24.77291%;
+  }
+
+  .heading-advantages {
+    left: 14.53348%;
+    top: 33.37134%;
+    width: 24.77291%;
+  }
+
+  .heading-hobbies {
+    left: 14.53344%;
+    top: 54.2%;
+    width: 40.37985%;
+  }
+
+  .heading-career {
+    left: 14.53348%;
+    top: 66.1%;
+    width: 25.43353%;
+  }
+
+  .glitch {
+    left: 23.03881%;
+    top: 7.75371%;
+    width: 54.00495%;
+    font-size: 5.8cqw;
+  }
+
+  .about-item-group {
+    left: 11.85015% !important;
+    width: 77.26315% !important;
+  }
+
+  .about-item-group:nth-of-type(1) {
+    top: 20.50884% !important;
+    height: 3.15929% !important;
+  }
+
+  .about-item-group:nth-of-type(2) {
+    top: 37.1565% !important;
+    height: 3.72942% !important;
+  }
+
+  .about-item-group:nth-of-type(3) {
+    top: 24.61928% !important;
+    height: 3.15929% !important;
+  }
+
+  .about-item-group:nth-of-type(4) {
+    top: 41.26694% !important;
+    height: 3.72942% !important;
+  }
+
+  .about-item-group:nth-of-type(5) {
+    top: 45.37738% !important;
+    height: 3.72942% !important;
+  }
+
+  .about-item-group:nth-of-type(6) {
+    top: 49.48782% !important;
+    height: 3.72942% !important;
+  }
+
+  .about-item-group:nth-of-type(7) {
+    top: 28.72972% !important;
+    height: 3.15929% !important;
+  }
+
+  .about-item-group:nth-of-type(8) {
+    top: 58.6% !important;
+    height: 4.14751% !important;
+  }
+
+  .about-item-group:nth-of-type(9) {
+    top: 70.1% !important;
+    height: 3.72942% !important;
+  }
+
+  .item {
+    font-size: 2.75cqw;
+  }
+
+  .item-small {
+    font-size: 1.8cqw;
+  }
+
+  .item-goal {
+    font-size: 2.65cqw;
+  }
+
+  .about-decoration {
+    left: 10.90008% !important;
+    width: 2.51439% !important;
+  }
+
+  .about-decoration:nth-of-type(1) {
+    top: 17.1855% !important;
+    height: 1.97853% !important;
+  }
+
+  .about-decoration:nth-of-type(2) {
+    top: 33.68113% !important;
+    height: 1.97853% !important;
+  }
+
+  .about-decoration:nth-of-type(3) {
+    top: 55.4% !important;
+    height: 2.39662% !important;
+  }
+
+  .about-decoration:nth-of-type(4) {
+    top: 66.8% !important;
+    height: 1.97853% !important;
+  }
+}
+
 </style>
