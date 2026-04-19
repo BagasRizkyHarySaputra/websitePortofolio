@@ -37,8 +37,6 @@ const scrollToSkills = () => {
       </div>
 
       <p class="hero-scroll-text">scroll down!<br>click the skull at the bottom right</p>
-      <div class="hero-chevron hero-chevron-top"></div>
-      <div class="hero-chevron hero-chevron-bottom"></div>
     </div>
   </section>
 </template>
@@ -172,24 +170,6 @@ const scrollToSkills = () => {
   text-align: center;
 }
 
-.hero-chevron {
-  position: absolute;
-  width: 1.04167%;
-  height: 1.11111%;
-  background: #ffffff;
-  clip-path: polygon(0 0, 15% 0, 50% 62%, 85% 0, 100% 0, 50% 100%);
-}
-
-.hero-chevron-top {
-  left: 60.10417%;
-  top: 91.38889%;
-}
-
-.hero-chevron-bottom {
-  left: 60.10417%;
-  top: 92.77778%;
-}
-
 :deep(.hero-logo .logo-container) {
   width: 100%;
   height: 100%;
@@ -265,21 +245,6 @@ const scrollToSkills = () => {
     width: 83.48472%;
     height: auto;
     font-size: 5.2cqw;
-  }
-
-  .hero-chevron {
-    width: 1.65153%;
-    height: 0.8%;
-  }
-
-  .hero-chevron-top {
-    left: 49.21552%;
-    top: 92.93044%;
-  }
-
-  .hero-chevron-bottom {
-    left: 49.21552%;
-    top: 93.50057%;
   }
 
   :deep(.hero-logo .ascii-art) {
