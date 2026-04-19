@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'VT323';
+  src: url('./assets/fonts/VT323/VT323-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body { 
+  margin: 0; 
+  padding: 0; 
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: 'VT323', monospace;
+  color: white; /* supaya teks default terlihat di background hitam */
+}
+
+* {
+  box-sizing: border-box;
+}
