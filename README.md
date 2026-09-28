@@ -142,10 +142,10 @@ Tooling of choice: `GDB`, `pwndbg`, `CyberChef`.
 
 |  | Placement | Event |
 | :--: | --- | --- |
+|  | 1st Place | **CYBREAK 2026** (ITS) |
 |  | 2nd Place | **SCTF 2026** (DCSC) |
 |  | 2nd Place | **WRECKIT7.0 Junior CTF 2026** |
 |  | Best Writeup | **WRECKIT7.0 Junior CTF 2026** (BSSN) |
-|  | 1st Place | **CYBREAK 2026** (ITS) |
 
 ---
 

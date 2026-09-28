@@ -5,6 +5,13 @@ import { useScrollReveal } from '../composables/useScrollReveal'
 
 const achievements = [
   {
+    rank: '1st Place',
+    name: 'CYBREAK 2026',
+    org: 'ITS',
+    link: 'https://sijastembase.blogspot.com/2026/09/berprestasi-pada-ajang-cybersecurity.html',
+    hint: 'View proof on the school blog'
+  },
+  {
     rank: '2nd Place',
     name: 'SCTF 2026',
     org: 'DCSC',
@@ -23,13 +30,6 @@ const achievements = [
     name: 'WRECKIT7.0 Junior CTF 2026',
     org: 'BSSN',
     link: 'https://sijastembase.blogspot.com/2026/08/berprestasi-pada-ajang-ctf-junior.html',
-    hint: 'View proof on the school blog'
-  },
-  {
-    rank: '1st Place',
-    name: 'CYBREAK 2026',
-    org: 'ITS',
-    link: 'https://sijastembase.blogspot.com/2026/09/berprestasi-pada-ajang-cybersecurity.html',
     hint: 'View proof on the school blog'
   }
 ]
