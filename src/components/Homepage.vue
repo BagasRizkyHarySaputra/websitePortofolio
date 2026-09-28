@@ -1,7 +1,68 @@
 <script setup>
+import { computed, onBeforeUnmount, onMounted, ref } from "vue"
+
 import profileImage from "../assets/homepage-profile.png"
 import profileImageHpTall from "../assets/homepage-profile-hp-tall.png"
 import profileImageHpWide from "../assets/homepage-profile-hp-wide.png"
+
+const DESCRIPTION_TEXT =
+  "Hi, my name is Bagas Rizky Hary Saputra, also known as “debugging”. I’m 16 years old and passionate about cybersecurity. I have participated in several Capture The Flag (CTF) competitions, with a focus on binary exploitation. I enjoy analyzing binaries, finding vulnerabilities, and developing exploits. I also practice through platforms like TryHackMe and use tools such as GDB and other debugging tools."
+
+// One element per character so the scroll-driven wipe advances in reading
+// order (left to right, then onto the next line) instead of all at once.
+const characters = computed(() => Array.from(DESCRIPTION_TEXT))
+const characterCount = computed(() => characters.value.length)
+
+const descriptionEl = ref(null)
+
+let revealFrame = null
+
+const clamp01 = (value) => Math.min(1, Math.max(0, value))
+
+const updateReveal = () => {
+  revealFrame = null
+
+  const el = descriptionEl.value
+  if (!el) return
+
+  const rect = el.getBoundingClientRect()
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0
+
+  if (viewportHeight === 0) return
+
+  // Reveal starts as the paragraph enters the viewport and finishes
+  // once it has settled into the upper half of the screen.
+  const revealStart = viewportHeight * 0.92
+  const revealEnd = viewportHeight * 0.35
+  const travel = revealStart - revealEnd
+
+  const progress = travel > 0 ? clamp01((revealStart - rect.top) / travel) : 1
+
+  // Hand the wipe a character cursor: each glyph lights up once the cursor
+  // has passed it, so the paint runs left-to-right and then wraps.
+  el.style.setProperty("--reveal-chars", (progress * characterCount.value).toFixed(2))
+}
+
+const scheduleReveal = () => {
+  if (revealFrame !== null) return
+  revealFrame = window.requestAnimationFrame(updateReveal)
+}
+
+onMounted(() => {
+  updateReveal()
+  window.addEventListener("scroll", scheduleReveal, { passive: true })
+  window.addEventListener("resize", scheduleReveal, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", scheduleReveal)
+  window.removeEventListener("resize", scheduleReveal)
+
+  if (revealFrame !== null) {
+    window.cancelAnimationFrame(revealFrame)
+    revealFrame = null
+  }
+})
 </script>
 
 <template>
@@ -16,14 +77,13 @@ import profileImageHpWide from "../assets/homepage-profile-hp-wide.png"
       <p class="profile-role">cyber security Enthusiast</p>
       <div class="profile-divider" aria-hidden="true"></div>
 
-      <p class="profile-description">
-        <span class="profile-description-strong">Hi, my name is</span>
-        <span>
-          Bagas Rizky Hary Saputra, also known as “debugging”. I’m 16 years old and passionate about cybersecurity. I
-          have participated in several Capture The Flag (CTF) competitions, with a focus on binary exploitation. I
-          enjoy analyzing binaries, finding vulnerabilities, and developing exploits. I also practice through
-          platforms like TryHackMe and use tools such as GDB and other debugging tools.
-        </span>
+      <p ref="descriptionEl" class="profile-description">
+        <span
+          v-for="(char, index) in characters"
+          :key="index"
+          class="profile-character"
+          :style="{ '--i': index }"
+        >{{ char }}</span>
       </p>
     </div>
   </section>
@@ -117,11 +177,32 @@ import profileImageHpWide from "../assets/homepage-profile-hp-wide.png"
   font-size: 2.5cqw;
   line-height: 1.05;
   text-align: justify;
-  color: rgb(255 255 255 / 44%);
+
+  /* Scroll-linked reveal: --reveal-chars (0 -> characterCount) is a cursor
+     driven from script. Each character brightens once the cursor passes it,
+     so the paint sweeps left-to-right and then wraps onto the next line. */
+  --reveal-chars: 0;
+  --profile-dim: 0.22;
+  --reveal-softness: 3;
 }
 
-.profile-description-strong {
-  color: #ffffff;
+.profile-character {
+  font-style: inherit;
+  opacity: max(
+    calc((var(--reveal-chars) - var(--i)) / var(--reveal-softness)),
+    var(--profile-dim)
+  );
+  transition: opacity 0.06s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-description {
+    --reveal-chars: 9999;
+  }
+
+  .profile-character {
+    transition: none;
+  }
 }
 
 @media (orientation: portrait) {

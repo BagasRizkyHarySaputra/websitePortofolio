@@ -1,4 +1,6 @@
 <script setup>
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+
 import group38103 from '../assets/aboutme/group-38-103.svg'
 import group41257 from '../assets/aboutme/group-41-257.svg'
 import group39106 from '../assets/aboutme/group-39-106.svg'
@@ -13,122 +15,191 @@ import group41702 from '../assets/aboutme/group-41-702.svg'
 import group41705 from '../assets/aboutme/group-41-705.svg'
 import group41709 from '../assets/aboutme/group-41-709.svg'
 
-const groupedItems = [
+// Grouped so every heading reads as a chapter: a title, a leading chevron,
+// and the ribbon facts that belong to it. Landscape keeps each item's
+// original absolute placement (see `.about-me-body { display: contents }`).
+const aboutGroups = [
   {
-    src: group38103,
-    text: 'Student on SMK Negeri 7 Semarang',
-    textClass: 'item',
-    left: '6.71875%',
-    top: '12.40741%',
-    width: '42.35784%',
-    height: '6.68968%'
+    key: 'background',
+    heading: 'Background',
+    headingClass: 'about-heading-background',
+    arrow: group41705,
+    items: [
+      {
+        src: group38103,
+        text: 'Student on SMK Negeri 7 Semarang',
+        textClass: 'item',
+        left: '6.71875%',
+        top: '12.40741%',
+        width: '42.35784%',
+        height: '6.68968%'
+      },
+      {
+        src: group39106,
+        text: 'Elder Brother',
+        textClass: 'item',
+        left: '6.71875%',
+        top: '21.11111%',
+        width: '42.35784%',
+        height: '6.68968%'
+      },
+      {
+        src: group39179,
+        text: 'Interested in IT and cybersecurity from 10th grade',
+        textClass: 'item-small',
+        left: '6.71875%',
+        top: '29.81481%',
+        width: '42.35784%',
+        height: '6.68968%'
+      }
+    ]
   },
   {
-    src: group41257,
-    text: 'Basic Programming',
-    textClass: 'item',
-    left: '52.44792%',
-    top: '12.40741%',
-    width: '42.35784%',
-    height: '6.68968%'
+    key: 'advantages',
+    heading: 'Advantages',
+    headingClass: 'about-heading-advantages',
+    arrow: group41709,
+    items: [
+      {
+        src: group41257,
+        text: 'Basic Programming',
+        textClass: 'item',
+        left: '52.44792%',
+        top: '12.40741%',
+        width: '42.35784%',
+        height: '6.68968%'
+      },
+      {
+        src: group41330,
+        text: 'Cybersecurity Basic',
+        textClass: 'item',
+        left: '52.44792%',
+        top: '21.11111%',
+        width: '42.35784%',
+        height: '6.68968%'
+      },
+      {
+        src: group41477,
+        text: 'Public Speaking',
+        textClass: 'item',
+        left: '52.60417%',
+        top: '29.81481%',
+        width: '42.35784%',
+        height: '6.68968%'
+      },
+      {
+        src: group41626,
+        text: 'Persistence and consistency',
+        textClass: 'item',
+        left: '52.76042%',
+        top: '38.51852%',
+        width: '42.35784%',
+        height: '6.68968%'
+      }
+    ]
   },
   {
-    src: group39106,
-    text: 'Elder Brother',
-    textClass: 'item',
-    left: '6.71875%',
-    top: '21.11111%',
-    width: '42.35784%',
-    height: '6.68968%'
+    key: 'hobbies',
+    heading: 'Interest & Hobbies',
+    headingClass: 'about-heading-hobbies',
+    arrow: group41702,
+    items: [
+      {
+        src: group41551,
+        text: 'Joining CTF Event',
+        textClass: 'item',
+        left: '6.875%',
+        top: '52.68519%',
+        width: '42.35784%',
+        height: '6.68968%'
+      }
+    ]
   },
   {
-    src: group41330,
-    text: 'Cybersecurity Basic',
-    textClass: 'item',
-    left: '52.44792%',
-    top: '21.11111%',
-    width: '42.35784%',
-    height: '6.68968%'
-  },
-  {
-    src: group41477,
-    text: 'Public Speaking',
-    textClass: 'item',
-    left: '52.60417%',
-    top: '29.81481%',
-    width: '42.35784%',
-    height: '6.68968%'
-  },
-  {
-    src: group41626,
-    text: 'Persistence and consistency',
-    textClass: 'item',
-    left: '52.76042%',
-    top: '38.51852%',
-    width: '42.35784%',
-    height: '6.68968%'
-  },
-  {
-    src: group39179,
-    text: 'Interested in IT and cybersecurity from 10th grade',
-    textClass: 'item-small',
-    left: '6.71875%',
-    top: '29.81481%',
-    width: '42.35784%',
-    height: '6.68968%'
-  },
-  {
-    src: group41551,
-    text: 'Joining CTF Event',
-    textClass: 'item',
-    left: '6.875%',
-    top: '52.68519%',
-    width: '42.35784%',
-    height: '6.68968%'
-  },
-  {
-    src: group41404,
-    text: 'To Become Cybersecurity Professional',
-    textClass: 'item-goal',
-    left: '7.03125%',
-    top: '77.5%',
-    width: '42.35784%',
-    height: '6.68968%'
+    key: 'career',
+    heading: 'Career Goals',
+    headingClass: 'about-heading-career',
+    arrow: group41701,
+    items: [
+      {
+        src: group41404,
+        text: 'To Become Cybersecurity Professional',
+        textClass: 'item-goal',
+        left: '7.03125%',
+        top: '77.5%',
+        width: '42.35784%',
+        height: '6.68968%'
+      }
+    ]
   }
 ]
 
-const smallDecorations = [
-  { src: group41705, left: '6.19792%', top: '5.37037%', width: '1.37845%', height: '4.18945%' },
-  { src: group41709, left: '50.36458%', top: '5.37037%', width: '1.37845%', height: '4.18945%' },
-  { src: group41702, left: '6.19792%', top: '44.62963%', width: '1.37845%', height: '4.18945%' },
-  { src: group41701, left: '6.35417%', top: '69.62963%', width: '1.37845%', height: '4.18945%' }
-]
+const rootEl = ref(null)
+let observer = null
+
+// Stagger every heading / ribbon as the section scrolls in, mirroring the
+// Achievement section so the two chapters share one motion language.
+onMounted(() => {
+  const targets = rootEl.value?.querySelectorAll('.about-group-heading, .about-item-group') ?? []
+  const list = Array.from(targets)
+  list.forEach((el, index) => el.style.setProperty('--about-seq', index))
+
+  const revealAll = () => list.forEach((el) => el.classList.add('is-visible'))
+
+  const prefersReducedMotion =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    revealAll()
+    return
+  }
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        entry.target.classList.add('is-visible')
+        observer.unobserve(entry.target)
+      })
+    },
+    { threshold: 0.2 }
+  )
+
+  list.forEach((el) => observer.observe(el))
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  observer = null
+})
 </script>
 
 <template>
-  <section class="about-me" id="about-me-section">
+  <section ref="rootEl" class="about-me" id="about-me-section">
     <div class="about-me-stage">
-      <div v-for="(item, index) in groupedItems" :key="`grouped-${index}`" class="about-item-group" :style="item">
-        <img class="about-item-decoration" :src="item.src" alt="" aria-hidden="true" />
-        <p class="about-text about-item-label" :class="item.textClass">{{ item.text }}</p>
-      </div>
-
-      <img
-        v-for="(item, index) in smallDecorations"
-        :key="`small-${index}`"
-        class="about-decoration"
-        :src="item.src"
-        alt=""
-        aria-hidden="true"
-        :style="item"
-      />
-
-      <p class="about-text heading heading-background">Background</p>
-      <p class="about-text heading heading-advantages">Advantages</p>
-      <p class="about-text heading heading-hobbies">Interest &amp; Hobbies</p>
-      <p class="about-text heading heading-career">Career Goals</p>
-
       <p class="about-text glitch">Ȁ̶ͅB̷̭̹̆̅͝O̸̝̞͆̌̽Ű̵̩͕̇̐̐Ţ̶̅͐̏̊ ̸͎̫̝̠͍͒̄͛M̸̧͍̝̜̒͠Ḛ̵̦̉̃̅!̴͖̭̓̏͜͠</p>
+
+      <div class="about-me-body">
+        <div v-for="group in aboutGroups" :key="group.key" class="about-group">
+          <p class="about-text about-group-heading" :class="group.headingClass">
+            <img class="about-group-arrow" :src="group.arrow" alt="" aria-hidden="true" />
+            <span>{{ group.heading }}</span>
+          </p>
+
+          <div class="about-group-items">
+            <div
+              v-for="(item, index) in group.items"
+              :key="index"
+              class="about-item-group"
+              :style="{ left: item.left, top: item.top, width: item.width, height: item.height }"
+            >
+              <img class="about-item-decoration" :src="item.src" alt="" aria-hidden="true" />
+              <p class="about-text about-item-label" :class="item.textClass">{{ item.text }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -150,10 +221,58 @@ const smallDecorations = [
   container-type: size;
 }
 
-.about-decoration {
+.about-text {
+  margin: 0;
   position: absolute;
+  font-family: 'VT323', monospace;
+  color: #ffffff;
+  line-height: 1;
 }
 
+/* Landscape: the wrappers dissolve so every heading / ribbon keeps its own
+   absolute placement on the stage (pixel-identical to the previous layout). */
+.about-me-body,
+.about-group,
+.about-group-items {
+  display: contents;
+}
+
+/* ---------- Headings: a small chevron followed by the title ---------- */
+.about-group-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55cqw;
+  font-size: 2.5cqw;
+  white-space: nowrap;
+}
+
+.about-group-arrow {
+  width: 1.37845cqw;
+  aspect-ratio: 27 / 46;
+  flex: 0 0 auto;
+}
+
+.about-heading-background {
+  left: 6.19792%;
+  top: 5.27778%;
+}
+
+.about-heading-advantages {
+  left: 50.36458%;
+  top: 5.27778%;
+}
+
+.about-heading-hobbies {
+  left: 6.19792%;
+  top: 44.53704%;
+}
+
+.about-heading-career {
+  left: 6.35417%;
+  top: 69.35185%;
+}
+
+/* ---------- Ribbon items ---------- */
 .about-item-group {
   position: absolute;
 }
@@ -175,19 +294,6 @@ const smallDecorations = [
   text-align: center;
 }
 
-.about-text {
-  margin: 0;
-  position: absolute;
-  font-family: 'VT323', monospace;
-  color: #ffffff;
-  line-height: 1;
-}
-
-.heading {
-  font-size: 2.5cqw;
-  text-align: justify;
-}
-
 .item {
   font-size: 2.5cqw;
 }
@@ -200,36 +306,28 @@ const smallDecorations = [
   font-size: 2.24375cqw;
 }
 
+/* Staggered reveal — each heading / ribbon fades up in reading order. */
+.about-group-heading,
+.about-item-group {
+  opacity: 0;
+  transform: translateY(1.6cqw);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  transition-delay: calc(var(--about-seq, 0) * 60ms);
+}
+
+.about-group-heading.is-visible,
+.about-item-group.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Big glitchy "ABOUT ME!" title ---------- */
 .glitch {
   left: 56.97917%;
   top: 68.42593%;
   width: 34.0625%;
   font-size: 3.75cqw;
   text-align: center;
-}
-
-.heading-background {
-  left: 8.17708%;
-  top: 5.27778%;
-  width: 13.59375%;
-}
-
-.heading-advantages {
-  left: 52.44792%;
-  top: 5.27778%;
-  width: 18.90625%;
-}
-
-.heading-hobbies {
-  left: 8.17708%;
-  top: 44.53704%;
-  width: 18.90625%;
-}
-
-.heading-career {
-  left: 8.4375%;
-  top: 69.35185%;
-  width: 18.90625%;
 }
 
 @media (orientation: portrait) {
@@ -244,127 +342,75 @@ const smallDecorations = [
     transform: translate(-50%, -50%);
   }
 
-  .heading {
-    font-size: 4.2cqw;
-  }
-
-  .heading-background {
-    left: 14.53348%;
-    top: 16.87571%;
-    width: 24.77291%;
-  }
-
-  .heading-advantages {
-    left: 14.53348%;
-    top: 33.37134%;
-    width: 24.77291%;
-  }
-
-  .heading-hobbies {
-    left: 14.53344%;
-    top: 54.2%;
-    width: 40.37985%;
-  }
-
-  .heading-career {
-    left: 14.53348%;
-    top: 66.1%;
-    width: 25.43353%;
-  }
-
   .glitch {
-    left: 23.03881%;
-    top: 7.75371%;
-    width: 54.00495%;
-    font-size: 5.8cqw;
+    left: 50%;
+    top: 4.5%;
+    width: 80%;
+    transform: translateX(-50%);
+    font-size: 5.6cqw;
   }
 
+  /* One column: chapters spread top-to-bottom so nothing is left dangling. */
+  .about-me-body {
+    position: absolute;
+    inset: 14% 6% 6% 6%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2cqw;
+  }
+
+  .about-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4cqw;
+  }
+
+  .about-group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3cqw;
+  }
+
+  .about-group-heading {
+    position: static;
+    font-size: 4cqw;
+    gap: 1.4cqw;
+  }
+
+  .about-group-arrow {
+    width: 2.6cqw;
+  }
+
+  /* Ribbons become full-width rows that keep their native 814:73 shape. */
   .about-item-group {
-    left: 11.85015% !important;
-    width: 77.26315% !important;
-  }
-
-  .about-item-group:nth-of-type(1) {
-    top: 20.50884% !important;
-    height: 3.15929% !important;
-  }
-
-  .about-item-group:nth-of-type(2) {
-    top: 37.1565% !important;
-    height: 3.72942% !important;
-  }
-
-  .about-item-group:nth-of-type(3) {
-    top: 24.61928% !important;
-    height: 3.15929% !important;
-  }
-
-  .about-item-group:nth-of-type(4) {
-    top: 41.26694% !important;
-    height: 3.72942% !important;
-  }
-
-  .about-item-group:nth-of-type(5) {
-    top: 45.37738% !important;
-    height: 3.72942% !important;
-  }
-
-  .about-item-group:nth-of-type(6) {
-    top: 49.48782% !important;
-    height: 3.72942% !important;
-  }
-
-  .about-item-group:nth-of-type(7) {
-    top: 28.72972% !important;
-    height: 3.15929% !important;
-  }
-
-  .about-item-group:nth-of-type(8) {
-    top: 58.6% !important;
-    height: 4.14751% !important;
-  }
-
-  .about-item-group:nth-of-type(9) {
-    top: 70.1% !important;
-    height: 3.72942% !important;
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 814 / 73;
   }
 
   .item {
-    font-size: 2.75cqw;
+    font-size: 2.7cqw;
   }
 
   .item-small {
-    font-size: 1.8cqw;
+    font-size: 2.5cqw;
   }
 
   .item-goal {
-    font-size: 2.65cqw;
-  }
-
-  .about-decoration {
-    left: 10.90008% !important;
-    width: 2.51439% !important;
-  }
-
-  .about-decoration:nth-of-type(1) {
-    top: 17.1855% !important;
-    height: 1.97853% !important;
-  }
-
-  .about-decoration:nth-of-type(2) {
-    top: 33.68113% !important;
-    height: 1.97853% !important;
-  }
-
-  .about-decoration:nth-of-type(3) {
-    top: 55.4% !important;
-    height: 2.39662% !important;
-  }
-
-  .about-decoration:nth-of-type(4) {
-    top: 66.8% !important;
-    height: 1.97853% !important;
+    font-size: 2.5cqw;
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .about-group-heading,
+  .about-item-group {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
 </style>

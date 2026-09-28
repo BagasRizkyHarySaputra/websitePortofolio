@@ -14,6 +14,30 @@ body {
   color: white; /* supaya teks default terlihat di background hitam */
 }
 
+/* Global UI scale — one knob that shrinks/zooms every section proportionally.
+   Sections lay their content out in % / cqw of a `.X-stage`, so scaling the
+   stage is a true "zoom out": internal proportions stay intact, the whole
+   composition just becomes a bit more compact on very wide (16:9+) screens. */
+:root {
+  --ui-scale: 0.86;
+}
+
+@media (orientation: portrait) {
+  :root {
+    --ui-scale: 1;
+  }
+}
+
+.homepage-stage,
+.about-me-stage,
+.skills-stage,
+.achievement-stage,
+.portofolio-stage,
+.cv-stage {
+  transform-origin: center;
+  transform: scale(var(--ui-scale));
+}
+
 * {
   box-sizing: border-box;
 }
