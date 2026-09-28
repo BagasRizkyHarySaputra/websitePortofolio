@@ -4,6 +4,9 @@ import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import cosmicJourneyPreview from '../assets/portfolio-previews/the-cosmic-journey.png'
 import webAdminPreview from '../assets/portfolio-previews/web-admin-gilt.png'
 import webSiswaPreview from '../assets/portfolio-previews/web-siswa-ten.png'
+import mlbbPreview from '../assets/portfolio-previews/mlbb-waydroid.jpg'
+import siapinPreview from '../assets/portfolio-previews/siapin-soal.png'
+import vibeinPreview from '../assets/portfolio-previews/vibein-dashboard.png'
 
 const previews = [
   {
@@ -26,6 +29,27 @@ const previews = [
     url: 'https://web-siswa-ten.vercel.app/',
     description:
       'Web Siswa. Sebuah Dynamic Web. Website ini saya buat pada saat project IoT di kelas 10. Bervisi monitoring untuk abseni para siswa. Sama seperti Web Admin, bedanya hanya khusus untuk siswa dan memiliki Authorize yang lebih minim mengakses data. Mengambil tema Clean Web dan Eye Catching. Saya Saya menggunakan framework NextJS untuk membuat ini, untuk generation code nya masih sangat kacau, lebih parah daripada The Cosmic Journey.'
+  },
+  {
+    src: vibeinPreview,
+    alt: 'Vibein preview',
+    url: 'https://vibein.work.gd/',
+    description:
+      'Vibein. Sebuah Dynamic Web berbasis React + Vite berupa dashboard marketplace API key. Punya halaman register/login, marketplace, manajemen API key, tutorial, profil, dan settings. Dibuat sebagai salah satu tugas project dari sekolah.'
+  },
+  {
+    src: siapinPreview,
+    alt: 'SIAPIN preview',
+    url: 'https://github.com/BagasRizkyHarySaputra/SIAPIN',
+    description:
+      'SIAPIN (Siap Taklukkan PTN Impianmu). Sebuah Dynamic Web bimbel digital untuk persiapan SNBT dan TKA (SMA/SMP), dibuat bersama tim untuk Lomba Inovasi Digital. Berisi bank soal orisinal 2.158 butir, estimasi peluang masuk 75 PTN, Diagnostic AI (radar kemampuan), leaderboard, serta bimble dan mentor. Dibuat dengan Next.js, React, TypeScript, Tailwind, Prisma, dan SQLite. Website live-nya sudah tidak aktif, dokumentasi dan kode tersedia di GitHub.'
+  },
+  {
+    src: mlbbPreview,
+    alt: 'MLBB Waydroid preview',
+    url: 'https://github.com/BagasRizkyHarySaputra/MLBB-waydroid-LinuxCloudMLBB',
+    description:
+      'MLBB on Waydroid (Linux Cloud Gaming). Sebuah project tools & automation, bukan web. Kumpulan script dan config untuk menjalankan Mobile Legends: Bang Bang di Linux via Waydroid (Android 13), lengkap dengan mode cloud-gaming memakai Sunshine + Artemis/Moonlight supaya HP hanya menerima stream. Mendukung multi-touch, Intel VAAPI encoding, dan launcher one-command. Berbasis Bash, diuji di Kali Linux + Hyprland.'
   }
 ]
 
@@ -325,12 +349,16 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3.125%;
+  gap: 2.2%;
+  padding-inline: 6%;
 }
 
+/* Fixed-width dashes stay neatly centred no matter how many slides there
+   are — six slides now read as a calm dot row instead of a full-width bar. */
 .portofolio-slider-indicator {
-  width: 15%;
-  height: 10%;
+  flex: 0 0 auto;
+  width: 7%;
+  height: 11%;
   min-height: 0.4cqw;
   border-radius: 9999px;
   background: rgb(255 255 255 / 36%);

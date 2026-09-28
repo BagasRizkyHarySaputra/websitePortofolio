@@ -127,12 +127,47 @@ onUnmounted(() => {
       }"
       aria-label="Navbar"
     >
-      <button class="floating-nav-button floating-nav-home" type="button" style="--nav-seq: 5" @click="onClickHome">HOME</button>
-      <button class="floating-nav-button floating-nav-about" type="button" style="--nav-seq: 4" @click="onClickAbout">About Me</button>
-      <button class="floating-nav-button floating-nav-skills" type="button" style="--nav-seq: 3" @click="onClickSkills">Skills</button>
-      <button class="floating-nav-button floating-nav-achievement" type="button" style="--nav-seq: 2" @click="onClickAchievement">Achievement</button>
-      <button class="floating-nav-button floating-nav-portofolio" type="button" style="--nav-seq: 1" @click="onClickPortofolio">Portofolio</button>
-      <button class="floating-nav-button floating-nav-cv" type="button" style="--nav-seq: 0" @click="onClickCv">CV</button>
+      <button class="floating-nav-button floating-nav-home" type="button" style="--nav-seq: 5" aria-label="Home" title="HOME" @click="onClickHome">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 11.2 12 4l8 7.2" />
+          <path d="M6.5 10v9h11v-9" />
+          <path d="M10 19v-5h4v5" />
+        </svg>
+      </button>
+      <button class="floating-nav-button floating-nav-about" type="button" style="--nav-seq: 4" aria-label="About Me" title="About Me" @click="onClickAbout">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.4" />
+          <path d="M5.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2" />
+        </svg>
+      </button>
+      <button class="floating-nav-button floating-nav-skills" type="button" style="--nav-seq: 3" aria-label="Skills" title="Skills" @click="onClickSkills">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m8 8-4 4 4 4" />
+          <path d="m16 8 4 4-4 4" />
+          <path d="M13.5 5.5 10.5 18.5" />
+        </svg>
+      </button>
+      <button class="floating-nav-button floating-nav-achievement" type="button" style="--nav-seq: 2" aria-label="Achievement" title="Achievement" @click="onClickAchievement">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="9" r="5" />
+          <path d="M8.6 13.2 7 21l5-2.6L17 21l-1.6-7.8" />
+        </svg>
+      </button>
+      <button class="floating-nav-button floating-nav-portofolio" type="button" style="--nav-seq: 1" aria-label="Portofolio" title="Portofolio" @click="onClickPortofolio">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3.5" y="7.5" width="17" height="12" rx="1.6" />
+          <path d="M9 7.5V6.2A1.7 1.7 0 0 1 10.7 4.5h2.6A1.7 1.7 0 0 1 15 6.2v1.3" />
+          <path d="M3.5 12.5h17" />
+          <path d="M11 12.5h2v2h-2z" />
+        </svg>
+      </button>
+      <button class="floating-nav-button floating-nav-cv" type="button" style="--nav-seq: 0" aria-label="CV" title="CV" @click="onClickCv">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6.5 3.5h7l4 4v13h-11z" />
+          <path d="M13.5 3.5v4h4" />
+          <path d="M9 12h6M9 15.2h6M9 8.6h2.4" />
+        </svg>
+      </button>
     </div>
   </div>
 </template>
@@ -178,14 +213,10 @@ onUnmounted(() => {
   border-radius: 50%;
   background: #ffffff;
   color: #000000;
-  font-family: 'VT323', monospace;
-  font-size: 13cqw;
-  line-height: 0.98;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
   padding: 0;
   transform: translate(-50%, -50%);
   opacity: 0;
@@ -198,7 +229,22 @@ onUnmounted(() => {
   --ring: 200cqw;
   width: 62cqw;
   height: 62cqw;
-  overflow-wrap: anywhere;
+}
+
+/* Minimal line-art icons that match the terminal / monospace theme. */
+.floating-nav-icon {
+  width: 62%;
+  height: 62%;
+  fill: none;
+  stroke: #000000;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.floating-nav-button:hover .floating-nav-icon,
+.floating-nav-button:focus-visible .floating-nav-icon {
+  stroke: #000000;
 }
 
 .floating-logo-navbar.is-showing .floating-nav-button,
@@ -267,7 +313,6 @@ onUnmounted(() => {
     --ring: 175cqw;
     width: 54cqw;
     height: 54cqw;
-    font-size: 11cqw;
   }
 }
 </style>

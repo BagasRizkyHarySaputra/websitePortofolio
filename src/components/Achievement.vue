@@ -2,11 +2,40 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const achievements = [
-  { rank: '2nd Place', name: 'SCTF 2026', org: 'DCSC' },
-  { rank: '2nd Place', name: 'WRECKIT7.0 Junior CTF 2026', org: '' },
-  { rank: 'Best Writeup', name: 'WRECKIT7.0 Junior CTF 2026', org: 'BSSN' },
-  { rank: '1st Place', name: 'CYBREAK 2026', org: 'ITS' }
+  {
+    rank: '2nd Place',
+    name: 'SCTF 2026',
+    org: 'DCSC',
+    link: 'https://www.instagram.com/p/Dabv4QrtCQE/',
+    hint: 'View proof on Instagram'
+  },
+  {
+    rank: '2nd Place',
+    name: 'WRECKIT7.0 Junior CTF 2026',
+    org: '',
+    link: 'https://sijastembase.blogspot.com/2026/08/berprestasi-pada-ajang-ctf-junior.html',
+    hint: 'View proof on the school blog'
+  },
+  {
+    rank: 'Best Writeup',
+    name: 'WRECKIT7.0 Junior CTF 2026',
+    org: 'BSSN',
+    link: 'https://sijastembase.blogspot.com/2026/08/berprestasi-pada-ajang-ctf-junior.html',
+    hint: 'View proof on the school blog'
+  },
+  {
+    rank: '1st Place',
+    name: 'CYBREAK 2026',
+    org: 'ITS',
+    link: 'https://sijastembase.blogspot.com/2026/09/berprestasi-pada-ajang-cybersecurity.html',
+    hint: 'View proof on the school blog'
+  }
 ]
+
+const openAchievement = (item) => {
+  if (!item?.link) return
+  window.open(item.link, '_blank', 'noopener,noreferrer')
+}
 
 const rootEl = ref(null)
 let observer = null
@@ -61,11 +90,20 @@ onBeforeUnmount(() => {
           class="achievement-item"
           :style="{ '--ach-index': index }"
         >
-          <span class="achievement-rank">{{ item.rank }}</span>
-          <span class="achievement-body">
-            <span class="achievement-name">{{ item.name }}</span>
-            <span v-if="item.org" class="achievement-org">· {{ item.org }}</span>
-          </span>
+          <button
+            type="button"
+            class="achievement-link"
+            :title="item.hint"
+            :aria-label="`View proof: ${item.rank} ${item.name}${item.org ? ' (' + item.org + ')' : ''}`"
+            @click="openAchievement(item)"
+          >
+            <span class="achievement-rank">{{ item.rank }}</span>
+            <span class="achievement-body">
+              <span class="achievement-name">{{ item.name }}</span>
+              <span v-if="item.org" class="achievement-org">· {{ item.org }}</span>
+            </span>
+            <span class="achievement-cta" aria-hidden="true">↗</span>
+          </button>
         </li>
 
         <li
@@ -147,10 +185,7 @@ onBeforeUnmount(() => {
 }
 
 .achievement-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 2.4cqw;
+  display: block;
   padding-bottom: 1.6cqw;
   border-bottom: 0.15625cqw solid rgb(255 255 255 / 32%);
 
@@ -163,6 +198,55 @@ onBeforeUnmount(() => {
 .achievement-item.is-in {
   opacity: 1;
   transform: none;
+}
+
+/* The whole row is one button that opens the proof of the award. */
+.achievement-link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2.4cqw;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.6cqw;
+}
+
+.achievement-link:focus-visible {
+  outline: 0.2cqw solid rgb(255 255 255 / 70%);
+  outline-offset: 0.6cqw;
+}
+
+.achievement-link:hover .achievement-name,
+.achievement-link:focus-visible .achievement-name {
+  text-decoration: underline;
+  text-underline-offset: 0.5cqw;
+}
+
+.achievement-link:hover .achievement-rank,
+.achievement-link:focus-visible .achievement-rank {
+  border-color: #ffffff;
+  background: rgb(255 255 255 / 12%);
+}
+
+.achievement-cta {
+  font-family: 'VT323', monospace;
+  font-size: 2.4cqw;
+  line-height: 1;
+  color: rgb(255 255 255 / 45%);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.achievement-link:hover .achievement-cta,
+.achievement-link:focus-visible .achievement-cta {
+  color: #ffffff;
+  transform: translate(0.3cqw, -0.3cqw);
 }
 
 .achievement-rank {
@@ -193,7 +277,6 @@ onBeforeUnmount(() => {
 }
 
 .achievement-item-next {
-  grid-template-columns: 1fr;
   border-bottom: none;
   padding-bottom: 0;
 }
@@ -272,6 +355,14 @@ onBeforeUnmount(() => {
     gap: 2.6cqw;
     padding-bottom: 1.9cqw;
     border-bottom-width: 0.2cqw;
+  }
+
+  .achievement-link {
+    gap: 2.6cqw;
+  }
+
+  .achievement-cta {
+    font-size: 3.4cqw;
   }
 
   .achievement-rank {

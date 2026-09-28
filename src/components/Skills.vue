@@ -25,6 +25,16 @@
         <div class="skills-orbit-line" aria-hidden="true"></div>
       </div>
 
+      <div class="skills-orbit-item orbit-item-5">
+        <p class="skills-item orbit-item-text orbit-item-text-regular">Understanding of many AI Models</p>
+        <div class="skills-orbit-line" aria-hidden="true"></div>
+      </div>
+
+      <div class="skills-orbit-item orbit-item-6">
+        <p class="skills-item orbit-item-text orbit-item-text-large">Boot2Root</p>
+        <div class="skills-orbit-line" aria-hidden="true"></div>
+      </div>
+
       <p class="skills-item skills-item-center">HTML, CSS, Javascript</p>
       <div class="skills-line skills-line-center" aria-hidden="true"></div>
     </div>
@@ -50,10 +60,10 @@
 
 .skills-orbit {
   position: absolute;
-  left: 1%;
-  top: 25%;
-  width: 98%;
-  height: 68%;
+  left: 14%;
+  top: 26%;
+  width: 72%;
+  height: 66%;
   border: 0.2vw solid #ffffff4c;
   border-radius: 50%;
   background: transparent;
@@ -81,35 +91,48 @@
   width: 34.0625%;
 }
 
+/* The label box is intentionally narrower than the orbit's horizontal radius:
+   when it was wider, the label + underline swung past the stage edge and got
+   clipped by `overflow: hidden`, so the line under some skills vanished. */
 .skills-orbit-item {
   position: absolute;
   left: 0;
   top: 0;
-  width: 34.0625%;
-  offset-path: ellipse(49% 34% at 50% 59%);
+  width: 26%;
+  z-index: 1;
+  offset-path: ellipse(36% 33% at 50% 59%);
   offset-anchor: 50% 50%;
   offset-rotate: 0deg;
   animation: skills-orbit-move 18s linear infinite;
 }
 
 .orbit-item-wide {
-  width: 35.52083%;
+  width: 27%;
 }
 
+/* Six evenly spaced start phases around the 18s lap. */
 .orbit-item-1 {
   animation-delay: 0s;
 }
 
 .orbit-item-2 {
-  animation-delay: -4.5s;
+  animation-delay: -3s;
 }
 
 .orbit-item-3 {
-  animation-delay: -9s;
+  animation-delay: -6s;
 }
 
 .orbit-item-4 {
-  animation-delay: -13.5s;
+  animation-delay: -9s;
+}
+
+.orbit-item-5 {
+  animation-delay: -12s;
+}
+
+.orbit-item-6 {
+  animation-delay: -15s;
 }
 
 .orbit-item-text {
@@ -119,22 +142,27 @@
 }
 
 .orbit-item-text-regular {
-  font-size: 2.5cqw;
+  font-size: 2.2cqw;
 }
 
 .orbit-item-text-large {
-  font-size: 2.70833cqw;
+  font-size: 2.35cqw;
 }
 
 .skills-orbit-line {
   margin-top: 0.55556%;
   border-top: 0.15625cqw solid #ffffff;
+  box-shadow: 0 0 0.5cqw rgb(255 255 255 / 40%);
 }
 
 .skills-item-center {
   left: 32.96875%;
   top: 47.03704%;
+  width: 34.0625%;
+  padding: 1.2cqw 1.6cqw;
+  background: #000000;
   font-size: 3.33333cqw;
+  z-index: 3;
 }
 
 .skills-line {
@@ -158,53 +186,13 @@
   }
 }
 
-@keyframes skills-orbit-move-1 {
-  from {
-    offset-distance: 0%;
-  }
-
-  to {
-    offset-distance: 100%;
-  }
-}
-
-@keyframes skills-orbit-move-2 {
-  from {
-    offset-distance: 25%;
-  }
-
-  to {
-    offset-distance: 125%;
-  }
-}
-
-@keyframes skills-orbit-move-3 {
-  from {
-    offset-distance: 50%;
-  }
-
-  to {
-    offset-distance: 150%;
-  }
-}
-
-@keyframes skills-orbit-move-4 {
-  from {
-    offset-distance: 75%;
-  }
-
-  to {
-    offset-distance: 175%;
-  }
-}
-
 @media (orientation: portrait) {
   .skills-orbit {
     display: block;
-    left: 6%;
-    top: 22%;
-    width: 88%;
-    height: 62%;
+    left: 20%;
+    top: 25%;
+    width: 60%;
+    height: 54%;
     border-width: 0.32cqw;
   }
 
@@ -215,36 +203,29 @@
     font-size: 4.5cqw;
   }
 
+  /* Same principle as landscape: a narrower box keeps the label + underline
+     from swinging past the stage edge and being clipped. */
   .skills-orbit-item {
-    width: 48%;
-    offset-path: ellipse(44% 30% at 50% 53%);
+    width: 29%;
+    offset-path: ellipse(30% 27% at 50% 52%);
     offset-anchor: 50% 50%;
     offset-rotate: 0deg;
-    animation-duration: 16s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-delay: 0s;
   }
 
-  .orbit-item-1 {
-    animation-name: skills-orbit-move-1;
-  }
-
-  .orbit-item-2 {
-    animation-name: skills-orbit-move-2;
-  }
-
-  .orbit-item-3 {
-    animation-name: skills-orbit-move-3;
-  }
-
-  .orbit-item-4 {
-    animation-name: skills-orbit-move-4;
+  .orbit-item-wide {
+    width: 30%;
   }
 
   .orbit-item-text-regular,
   .orbit-item-text-large {
-    font-size: 3.55cqw;
+    font-size: 2.55cqw;
+  }
+
+  .skills-item-center {
+    left: 22%;
+    top: 47%;
+    width: 56%;
+    font-size: 3.6cqw;
   }
 
   .skills-item-center {
