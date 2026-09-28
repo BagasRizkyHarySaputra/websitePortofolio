@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
       <img class="profile-image profile-image-portrait-wide" :src="profileImageHpWide" alt="" aria-hidden="true" />
 
       <h1 class="profile-name">Bagas Rizky Hary Saputra</h1>
-      <p class="profile-role">cyber security Enthusiast</p>
+      <p class="profile-role">Cybersecurity Enthusiast</p>
       <div class="profile-divider" aria-hidden="true"></div>
 
       <p ref="descriptionEl" class="profile-description">

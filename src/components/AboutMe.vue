@@ -1,5 +1,7 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { ref } from 'vue'
+
+import { useScrollReveal } from '../composables/useScrollReveal'
 
 import group38103 from '../assets/aboutme/group-38-103.svg'
 import group41257 from '../assets/aboutme/group-41-257.svg'
@@ -27,7 +29,7 @@ const aboutGroups = [
     items: [
       {
         src: group38103,
-        text: 'Student on SMK Negeri 7 Semarang',
+        text: 'Student at SMK Negeri 7 Semarang',
         textClass: 'item',
         left: '6.71875%',
         top: '12.40741%',
@@ -135,43 +137,13 @@ const aboutGroups = [
 ]
 
 const rootEl = ref(null)
-let observer = null
 
-// Stagger every heading / ribbon as the section scrolls in, mirroring the
-// Achievement section so the two chapters share one motion language.
-onMounted(() => {
-  const targets = rootEl.value?.querySelectorAll('.about-group-heading, .about-item-group') ?? []
-  const list = Array.from(targets)
-  list.forEach((el, index) => el.style.setProperty('--about-seq', index))
-
-  const revealAll = () => list.forEach((el) => el.classList.add('is-visible'))
-
-  const prefersReducedMotion =
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-    revealAll()
-    return
-  }
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        entry.target.classList.add('is-visible')
-        observer.unobserve(entry.target)
-      })
-    },
-    { threshold: 0.2 }
-  )
-
-  list.forEach((el) => observer.observe(el))
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
-  observer = null
+// Replaying reveal: headings / ribbons fade + slide in on every pass through
+// the section, entering from the side the content is travelling from.
+useScrollReveal(rootEl, '.about-group-heading, .about-item-group', {
+  activeClass: 'is-visible',
+  seqVar: '--about-seq',
+  stagger: 60
 })
 </script>
 
@@ -306,13 +278,20 @@ onBeforeUnmount(() => {
   font-size: 2.24375cqw;
 }
 
-/* Staggered reveal — each heading / ribbon fades up in reading order. */
+/* Replaying reveal — each heading / ribbon fades + slides into place on every
+   pass. The travel side is stamped by the composable from the scroll
+   direction, so scrolling down enters from below and scrolling up from above. */
 .about-group-heading,
 .about-item-group {
   opacity: 0;
   transform: translateY(1.6cqw);
   transition: opacity 0.45s ease, transform 0.45s ease;
   transition-delay: calc(var(--about-seq, 0) * 60ms);
+}
+
+.about-group-heading.reveal-from-above,
+.about-item-group.reveal-from-above {
+  transform: translateY(-1.6cqw);
 }
 
 .about-group-heading.is-visible,

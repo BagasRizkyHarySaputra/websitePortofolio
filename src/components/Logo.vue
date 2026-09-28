@@ -6,15 +6,15 @@ const pupilY = ref(0)
 const MAX_OFFSET = 8
 
 const moveEye = (e) => {
-  // Mencari titik tengah layar (berlaku di manapun logo diletakkan)
+  // Find the centre of the screen (works wherever the logo is placed)
   const centerX = window.innerWidth / 2
   const centerY = window.innerHeight / 2
   
-  // Menghitung rasio posisi mouse dari titik tengah (-1 sampai 1)
+  // Map the mouse position to a ratio from the centre (-1 to 1)
   const ratioX = (e.clientX - centerX) / centerX
   const ratioY = (e.clientY - centerY) / centerY
   
-  // Menerapkan posisi baru (tambah batas maksimal supaya tidak keluar dari kurung)
+  // Apply the new position, clamped by a max offset so pupils stay inside
   pupilX.value = ratioX * MAX_OFFSET
   pupilY.value = ratioY * MAX_OFFSET
 }

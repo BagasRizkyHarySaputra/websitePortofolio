@@ -1,5 +1,7 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { ref } from 'vue'
+
+import { useScrollReveal } from '../composables/useScrollReveal'
 
 const achievements = [
   {
@@ -38,41 +40,14 @@ const openAchievement = (item) => {
 }
 
 const rootEl = ref(null)
-let observer = null
 
-onMounted(() => {
-  const items = rootEl.value?.querySelectorAll('.achievement-item') ?? []
-
-  const revealAll = () => {
-    items.forEach((el) => el.classList.add('is-in'))
-  }
-
-  const prefersReducedMotion =
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-    revealAll()
-    return
-  }
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        entry.target.classList.add('is-in')
-        observer.unobserve(entry.target)
-      })
-    },
-    { threshold: 0.25 }
-  )
-
-  items.forEach((el) => observer.observe(el))
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
-  observer = null
+// Replays on every pass: each award fades + slides in from the side the
+// content is travelling from, then resets when it leaves the viewport.
+useScrollReveal(rootEl, '.achievement-item', {
+  activeClass: 'is-in',
+  seqVar: '--ach-index',
+  stagger: 70,
+  threshold: 0.25
 })
 </script>
 
@@ -193,6 +168,10 @@ onBeforeUnmount(() => {
   transform: translateY(1.6cqw);
   transition: opacity 0.45s ease, transform 0.45s ease;
   transition-delay: calc(var(--ach-index, 0) * 70ms);
+}
+
+.achievement-item.reveal-from-above {
+  transform: translateY(-1.6cqw);
 }
 
 .achievement-item.is-in {

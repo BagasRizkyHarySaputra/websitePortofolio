@@ -14,42 +14,42 @@ const previews = [
     alt: 'The Cosmic Journey preview',
     url: 'https://the-cosmic-journey.vercel.app/',
     description:
-      'The Cosmic Journey. Sebuah website static hasil karya saya, ini adalah salah satu tugas project dari sekolah pada saat kelas 11. Mengambil tema luar angkasa, disini saya membahas tentang planet, proyek luar angkasa, dan event-event antariksa. Di design menggunakan font dengan aksen yang elegant. Website ini berfokus pada visual yang menarik. Saya menggunakan framework ReactJS untuk membuat website ini. Masih kurang efficient dalam coding, sehingga agak berat jika di akses dan harus menunggu beberapa detik untuk loading semua asset nya.'
+      'The Cosmic Journey. A static website I built as a school project in 11th grade. With a space theme, it explores planets, space missions, and astronomy events. It uses an elegant, accented typeface and focuses on strong visuals. I built it with ReactJS. The code is not very efficient, so it feels a bit heavy and takes a few seconds to load all of its assets.'
   },
   {
     src: webAdminPreview,
     alt: 'Web Admin preview',
     url: 'https://web-admin-gilt.vercel.app/',
     description:
-      'Web Admin RFID. Sebuah Dynamic Web. Website ini saya buat pada saat project IoT di kelas 10. Berisi monitoring untuk abseni para siswa. Mengambil tema simple dan easy to use. Saya menggunakan framework NextJS untuk membuat ini, untuk generation code nya masih sangat kacau, lebih parah daripada The Cosmic Journey.'
+      'Web Admin RFID. A dynamic web app I built during an IoT project in 10th grade. It monitors student attendance. It uses a simple, easy-to-use theme. I built it with Next.js, and the generated code is still messy — even rougher than The Cosmic Journey.'
   },
   {
     src: webSiswaPreview,
     alt: 'Web Siswa preview',
     url: 'https://web-siswa-ten.vercel.app/',
     description:
-      'Web Siswa. Sebuah Dynamic Web. Website ini saya buat pada saat project IoT di kelas 10. Bervisi monitoring untuk abseni para siswa. Sama seperti Web Admin, bedanya hanya khusus untuk siswa dan memiliki Authorize yang lebih minim mengakses data. Mengambil tema Clean Web dan Eye Catching. Saya Saya menggunakan framework NextJS untuk membuat ini, untuk generation code nya masih sangat kacau, lebih parah daripada The Cosmic Journey.'
+      'Web Siswa. A dynamic web app I built during an IoT project in 10th grade. It monitors student attendance. It is similar to Web Admin, but aimed specifically at students and grants more limited data access. It uses a clean and eye-catching theme. I built it with Next.js, and the generated code is still messy — even rougher than The Cosmic Journey.'
   },
   {
     src: vibeinPreview,
     alt: 'Vibein preview',
     url: 'https://vibein.work.gd/',
     description:
-      'Vibein. Sebuah Dynamic Web berbasis React + Vite berupa dashboard marketplace API key. Punya halaman register/login, marketplace, manajemen API key, tutorial, profil, dan settings. Dibuat sebagai salah satu tugas project dari sekolah.'
+      'Vibein. A dynamic web app built with React + Vite: a marketplace dashboard for API keys. It has register/login, a marketplace, API key management, tutorials, a profile, and settings. Built as one of my school projects.'
   },
   {
     src: siapinPreview,
     alt: 'SIAPIN preview',
     url: 'https://github.com/BagasRizkyHarySaputra/SIAPIN',
     description:
-      'SIAPIN (Siap Taklukkan PTN Impianmu). Sebuah Dynamic Web bimbel digital untuk persiapan SNBT dan TKA (SMA/SMP), dibuat bersama tim untuk Lomba Inovasi Digital. Berisi bank soal orisinal 2.158 butir, estimasi peluang masuk 75 PTN, Diagnostic AI (radar kemampuan), leaderboard, serta bimble dan mentor. Dibuat dengan Next.js, React, TypeScript, Tailwind, Prisma, dan SQLite. Website live-nya sudah tidak aktif, dokumentasi dan kode tersedia di GitHub.'
+      'SIAPIN (Siap Taklukkan PTN Impianmu / "Ready to Conquer Your Dream University"). A dynamic web app: a digital tutoring platform for SNBT and TKA (high-school) exam prep, built with a team for a Digital Innovation Competition. It features a bank of 2,158 original questions, admission-chance estimates for 75 universities, an AI diagnostic (ability radar), a leaderboard, plus tutoring and mentors. Built with Next.js, React, TypeScript, Tailwind, Prisma, and SQLite. The live site is no longer active; the documentation and code are available on GitHub.'
   },
   {
     src: mlbbPreview,
     alt: 'MLBB Waydroid preview',
     url: 'https://github.com/BagasRizkyHarySaputra/MLBB-waydroid-LinuxCloudMLBB',
     description:
-      'MLBB on Waydroid (Linux Cloud Gaming). Sebuah project tools & automation, bukan web. Kumpulan script dan config untuk menjalankan Mobile Legends: Bang Bang di Linux via Waydroid (Android 13), lengkap dengan mode cloud-gaming memakai Sunshine + Artemis/Moonlight supaya HP hanya menerima stream. Mendukung multi-touch, Intel VAAPI encoding, dan launcher one-command. Berbasis Bash, diuji di Kali Linux + Hyprland.'
+      'MLBB on Waydroid (Linux Cloud Gaming). A tools & automation project, not a website. A collection of scripts and configs for running Mobile Legends: Bang Bang on Linux via Waydroid (Android 13), complete with a cloud-gaming mode using Sunshine + Artemis/Moonlight so your phone only has to receive the stream. Supports multi-touch, Intel VAAPI encoding, and a one-command launcher. Built with Bash and tested on Kali Linux + Hyprland.'
   }
 ]
 

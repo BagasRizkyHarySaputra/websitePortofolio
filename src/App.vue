@@ -153,7 +153,7 @@ onUnmounted(() => {
           <path d="M8.6 13.2 7 21l5-2.6L17 21l-1.6-7.8" />
         </svg>
       </button>
-      <button class="floating-nav-button floating-nav-portofolio" type="button" style="--nav-seq: 1" aria-label="Portofolio" title="Portofolio" @click="onClickPortofolio">
+      <button class="floating-nav-button floating-nav-portofolio" type="button" style="--nav-seq: 1" aria-label="Portfolio" title="Portfolio" @click="onClickPortofolio">
         <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <rect x="3.5" y="7.5" width="17" height="12" rx="1.6" />
           <path d="M9 7.5V6.2A1.7 1.7 0 0 1 10.7 4.5h2.6A1.7 1.7 0 0 1 15 6.2v1.3" />
