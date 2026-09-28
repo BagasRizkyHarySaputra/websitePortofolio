@@ -3,8 +3,8 @@ import { ref } from 'vue'
 
 import catBwGif from '../assets/cat-bw.gif'
 
-const cvDocUrl = 'https://docs.google.com/document/d/1wSJJufLlM2opbgSjh-2srDn4PmTjkMBm0oJuj7yqCKs/edit?usp=sharing'
-const cvPreviewUrl = 'https://docs.google.com/document/d/1wSJJufLlM2opbgSjh-2srDn4PmTjkMBm0oJuj7yqCKs/preview'
+const cvDocUrl = 'https://docs.google.com/document/d/1Y-ixMsB3n4O_-Ao4mSrcn4Jpx4lIzukCmKBt0czf0cw/edit?usp=sharing'
+const cvPreviewUrl = 'https://docs.google.com/document/d/1Y-ixMsB3n4O_-Ao4mSrcn4Jpx4lIzukCmKBt0czf0cw/preview'
 
 const isCvPopupOpen = ref(false)
 
