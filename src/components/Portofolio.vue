@@ -268,7 +268,7 @@ onUnmounted(() => {
 .portofolio {
   width: 100vw;
   height: 100vh;
-  background: #000000;
+  background: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -445,14 +445,14 @@ onUnmounted(() => {
 
 @media (orientation: portrait) {
   .portofolio-stage {
-    inset: auto;
-    left: 50%;
-    top: 50%;
+    inset: 0;
+    left: auto;
+    top: auto;
+    width: 100%;
     height: 100%;
-    width: auto;
-    max-width: 100%;
-    aspect-ratio: 1211 / 2631;
-    transform: translate(-50%, -50%);
+    max-width: none;
+    aspect-ratio: auto;
+    transform: none;
   }
 
   .portofolio-badge {

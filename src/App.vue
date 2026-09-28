@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 
 import Home from './components/Home.vue'
+import SiteBackground from './components/SiteBackground.vue'
 import Homepage from './components/Homepage.vue'
 import AboutMe from './components/AboutMe.vue'
 import Skills from './components/Skills.vue'
@@ -103,6 +104,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <SiteBackground />
   <Home />
   <div class="section-gap" aria-hidden="true"></div>
   <Homepage id="homepage-section" />
@@ -175,7 +177,7 @@ onUnmounted(() => {
 <style scoped>
 .section-gap {
   height: clamp(10rem, 30vh, 20rem);
-  background-color: black;
+  background-color: transparent;
 }
 
 .floating-logo-wrapper {

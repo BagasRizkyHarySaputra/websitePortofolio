@@ -11,7 +11,8 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   font-family: 'VT323', monospace;
-  color: white; /* supaya teks default terlihat di background hitam */
+  color: white; /* default text stays visible over the dark backdrop */
+  background-color: #05060a;
 }
 
 /* Global UI scale — one knob that shrinks/zooms every section proportionally.

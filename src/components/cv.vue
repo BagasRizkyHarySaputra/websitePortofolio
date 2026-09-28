@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 
-import catBwGif from '../assets/cat-bw.gif'
+import catBwGif from '../assets/cat-bw-transparent.gif'
 
 const cvDocUrl = 'https://docs.google.com/document/d/1Y-ixMsB3n4O_-Ao4mSrcn4Jpx4lIzukCmKBt0czf0cw/edit?usp=sharing'
 const cvPreviewUrl = 'https://docs.google.com/document/d/1Y-ixMsB3n4O_-Ao4mSrcn4Jpx4lIzukCmKBt0czf0cw/preview'
@@ -50,7 +50,7 @@ const onDownloadCv = () => {
 .cv {
   width: 100vw;
   height: 100vh;
-  background: #000000;
+  background: transparent;
   position: relative;
   overflow: hidden;
   container-type: size;

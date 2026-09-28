@@ -45,7 +45,7 @@ const scrollToSkills = () => {
 .hero-section {
   width: 100vw;
   height: 100vh;
-  background-color: #000000;
+  background-color: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -212,7 +212,9 @@ const scrollToSkills = () => {
     left: auto;
     top: auto;
     width: 78%;
-    height: 31cqh;
+    /* Auto height so the ASCII cat can never spill past its box and cover
+       the nav buttons below it on tall / portrait-ish windows. */
+    height: auto;
   }
 
   .hero-title {
@@ -248,7 +250,8 @@ const scrollToSkills = () => {
   }
 
   :deep(.hero-logo .ascii-art) {
-    font-size: 2.2cqw;
+    /* Cap by height as well as width so 20 lines always fit the logo box. */
+    font-size: min(2.2cqw, 1.4cqh);
   }
 }
 </style>

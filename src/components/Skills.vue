@@ -45,7 +45,7 @@
 .skills {
   width: 100vw;
   height: 100vh;
-  background: #000000;
+  background: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -160,7 +160,12 @@
   top: 47.03704%;
   width: 34.0625%;
   padding: 1.2cqw 1.6cqw;
-  background: #000000;
+  /* Frosted plate instead of a solid black box so the orbiting labels can
+     still pass "behind" it without punching a hard hole in the backdrop. */
+  background: rgb(10 14 22 / 62%);
+  border: 0.1cqw solid rgb(255 255 255 / 14%);
+  border-radius: 1cqw;
+  backdrop-filter: blur(3px);
   font-size: 3.33333cqw;
   z-index: 3;
 }
@@ -219,13 +224,6 @@
   .orbit-item-text-regular,
   .orbit-item-text-large {
     font-size: 2.55cqw;
-  }
-
-  .skills-item-center {
-    left: 22%;
-    top: 47%;
-    width: 56%;
-    font-size: 3.6cqw;
   }
 
   .skills-item-center {

@@ -77,6 +77,11 @@ NO!                          MNO!
   margin: 0;
   color: #c4c4c4;
   white-space: pre;
+  /* Shrink the block to the picture's own width and centre it, so the cat
+     stays optically centred even when the container is wider than the art
+     (e.g. tall / portrait-ish windows where left-aligning shifted it). */
+  width: max-content;
+  margin-inline: auto;
 }
 
 .pupil {
