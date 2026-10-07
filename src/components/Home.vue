@@ -21,6 +21,13 @@ const scrollToSkills = () => {
     block: "start"
   })
 }
+
+const scrollToWriteups = () => {
+  document.getElementById("writeups-section")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  })
+}
 </script>
 
 <template>
@@ -34,6 +41,7 @@ const scrollToSkills = () => {
         <button class="hero-nav-item hero-nav-home" type="button" @click="scrollToHomepage">HOME</button>
         <button class="hero-nav-item hero-nav-about" type="button" @click="scrollToAboutMe">About Me</button>
         <button class="hero-nav-item hero-nav-skills" type="button" @click="scrollToSkills">Skills</button>
+        <button class="hero-nav-item hero-nav-writeups" type="button" @click="scrollToWriteups">Writeups</button>
       </div>
 
       <p class="hero-scroll-text">scroll down!<br>click the skull at the bottom right</p>
@@ -160,6 +168,14 @@ const scrollToSkills = () => {
   font-size: 3.75cqw;
 }
 
+.hero-nav-writeups {
+  left: 7.1875%;
+  top: 67.5%;
+  width: 13.90625%;
+  height: 9.07407%;
+  font-size: 3.75cqw;
+}
+
 .hero-scroll-text {
   left: 34.32292%;
   top: 85%;
@@ -198,13 +214,13 @@ const scrollToSkills = () => {
   .hero-menu-group {
     position: absolute;
     left: 50%;
-    top: 15.8%;
+    top: 11%;
     transform: translateX(-50%);
     width: 58%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2.2cqh;
+    gap: 1.4cqh;
   }
 
   .hero-logo {
@@ -236,7 +252,8 @@ const scrollToSkills = () => {
 
   .hero-nav-home,
   .hero-nav-about,
-  .hero-nav-skills {
+  .hero-nav-skills,
+  .hero-nav-writeups {
     width: 72%;
     height: 4.7cqh;
   }

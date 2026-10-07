@@ -1,0 +1,57 @@
+[
+  {
+    "slug": "shellcoding",
+    "file": "writeups/shellcoding.md",
+    "title": "Shellcoding",
+    "blurb": "Hand-rolling shellcode around an fgets blacklist — sysphone, execute, backdoor_anonymous, brainrot & pwnable.tw/start.",
+    "tags": [
+      "pwn",
+      "shellcode",
+      "bypass"
+    ],
+    "source": "https://hackmd.io/@axLOw9-VSAqUknv1IORzog/B1qZyJ4-zl",
+    "challenges": 5,
+    "html": "./writeups/shellcoding.html"
+  },
+  {
+    "slug": "thm-pwn101",
+    "file": "writeups/thm-pwn101.md",
+    "title": "TryHackMe — PWN 101",
+    "blurb": "Full walkthrough of the TryHackMe PWN 101 room: from stack overflows to ret2win, format strings and integer bugs.",
+    "tags": [
+      "pwn",
+      "tryhackme",
+      "rop"
+    ],
+    "source": "https://hackmd.io/@axLOw9-VSAqUknv1IORzog/SyHMYv0gGe",
+    "challenges": 10,
+    "html": "./writeups/thm-pwn101.html"
+  },
+  {
+    "slug": "acectf2025",
+    "file": "writeups/acectf2025.md",
+    "title": "ACECTF 2025",
+    "blurb": "ACECTF 2025 binary exploitation set — from_start and friends, dissected step by step.",
+    "tags": [
+      "pwn",
+      "ctf"
+    ],
+    "source": "https://hackmd.io/@axLOw9-VSAqUknv1IORzog/rJ6Fl3dmGe",
+    "challenges": 1,
+    "html": "./writeups/acectf2025.html"
+  },
+  {
+    "slug": "lksn2026-pwn",
+    "file": "writeups/lksn2026-pwn.md",
+    "title": "LKSN 2026 — PWN",
+    "blurb": "The LKSN 2026 pwn track: another1 & another2, GOT-overwrite arithmetic and canary/base leaks.",
+    "tags": [
+      "pwn",
+      "lksn",
+      "got"
+    ],
+    "source": "https://hackmd.io/@axLOw9-VSAqUknv1IORzog/SkOyFJIIfe",
+    "challenges": 2,
+    "html": "./writeups/lksn2026-pwn.html"
+  }
+]

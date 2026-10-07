@@ -30,10 +30,11 @@ Everything you see — the drifting grid, scanlines, glows, orbiting skills, per
 ## // features
 
 - **ASCII logo with tracking eyes** — the cat pupils follow your mouse.
-- **Circular radial nav** — the floating logo fans six line-art SVG buttons out along a computed ring (`cos/sin × radius`), so it stays proportional at any aspect ratio.
+- **Circular radial nav** — the floating logo fans seven line-art SVG buttons out along a computed ring (`cos/sin × radius`), so it stays proportional at any aspect ratio.
 - **Per-character scroll reveal** — the intro paragraph lights up white, character by character, left-to-right, then wraps.
 - **Replaying section reveals** — headings and list items animate *every time* you scroll past, and the entrance direction follows the scroll (down → rise, up → descend).
 - **Achievement → proof** — each award is a button that opens its source of truth (news / Instagram).
+- **Writeup reader** — a Writeup section links to a full-page view holding my CTF/pwn notes, mirrored from HackMD. Each note is pre-rendered at build time with a working anchor-linked table of contents and its screenshots bundled locally, so they render with no external calls.
 - **Project slider** with an interactive description panel.
 - **Interactive CV** — an in-page Google-Docs modal plus a direct download.
 - **Themed backdrop** — a fixed CRT layer (drifting grid, scanlines, glow, sweep, vignette) that all sections sit on top of.
@@ -50,6 +51,7 @@ Everything you see — the drifting grid, scanlines, glows, orbiting skills, per
 | Styling | Hand-written CSS, container queries, CSS custom properties |
 | Font | [VT323](src/assets/fonts/VT323/) (monospace) |
 | Motion | Native CSS transitions/animations + `IntersectionObserver` |
+| Writeups | `marked` (dev/build only) pre-renders `writeups/*.md` → static HTML |
 | Deploy | **Vercel** (auto-deploy on push to `main`) |
 
 No runtime dependencies beyond Vue itself.
@@ -64,7 +66,11 @@ src/
 ├── main.js
 ├── style.css                  # fonts, base styles, global --ui-scale
 ├── composables/
-│   └── useScrollReveal.js     # replaying, direction-aware reveal controller
+│   ├── useScrollReveal.js     # replaying, direction-aware reveal controller
+│   └── useRoute.js            # tiny hash router (home / writeups index / reader)
+├── data/
+│   ├── writeups.json          # generated index metadata for the writeup cards
+│   └── writeups/*.html        # pre-rendered writeup articles (with working ToC)
 ├── components/
 │   ├── Home.vue               # hero: ascii logo + nav buttons
 │   ├── Homepage.vue           # profile + per-character scroll reveal
@@ -72,6 +78,8 @@ src/
 │   ├── Skills.vue             # orbiting skill ring
 │   ├── Achievement.vue        # awards, each linking to its proof
 │   ├── Portofolio.vue         # project slider + description panel
+│   ├── Writeups.vue           # writeup section on the main page
+│   ├── WriteupsPage.vue       # full-page writeup index + reader (ToC, scroll-spy)
 │   ├── cv.vue                 # CV modal + download
 │   ├── Logo.vue               # ascii cat with tracking pupils
 │   └── SiteBackground.vue     # fixed CRT backdrop
@@ -93,6 +101,9 @@ npm run dev
 
 # production build → dist/
 npm run build
+
+# regenerate writeup HTML from writeups/*.md (also runs as part of build)
+npm run gen:writeups
 
 # preview the production build locally
 npm run preview
@@ -117,6 +128,20 @@ A single global knob in [`src/style.css`](src/style.css) zooms the whole thing:
 ```
 
 Sections then become transparent so the fixed backdrop ([`SiteBackground.vue`](src/components/SiteBackground.vue)) reads as one continuous screen.
+
+---
+
+## // writeups
+
+Writeup content lives as markdown in [`writeups/`](writeups/) (exported from HackMD). `npm run build` runs [`scripts/gen-writeups.mjs`](scripts/gen-writeups.mjs), which:
+
+1. strips the HackMD export frontmatter and title,
+2. renders the body with `marked`,
+3. rewrites HackMD `_uploads` image URLs to local files in [`public/writeups/<slug>/`](public/writeups/),
+4. assigns slugified `id`s to every heading and builds an anchor-linked table of contents, and
+5. emits `src/data/writeups/<slug>.html` + `src/data/writeups.json`.
+
+The reader ([`WriteupsPage.vue`](src/components/WriteupsPage.vue)) is its own scroll container, so ToC clicks are intercepted and routed to `scrollIntoView` on the matching heading, with a scroll-spy highlighting the section in view.
 
 ---
 

@@ -42,3 +42,8 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Lock the page scroll while the full-page writeup reader is open. */
+body.writeups-open {
+  overflow: hidden;
+}

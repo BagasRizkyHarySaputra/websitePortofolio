@@ -1,6 +1,7 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 
+import { useRoute } from './composables/useRoute'
 import Home from './components/Home.vue'
 import SiteBackground from './components/SiteBackground.vue'
 import Homepage from './components/Homepage.vue'
@@ -8,12 +9,16 @@ import AboutMe from './components/AboutMe.vue'
 import Skills from './components/Skills.vue'
 import Achievement from './components/Achievement.vue'
 import Portofolio from './components/Portofolio.vue'
+import Writeups from './components/Writeups.vue'
+import WriteupsPage from './components/WriteupsPage.vue'
 import Cv from './components/cv.vue'
 import Logo from './components/Logo.vue'
 
+const { route } = useRoute()
+
 const floatingNavbarPhase = ref('hidden')
 
-const NAV_ITEM_COUNT = 6
+const NAV_ITEM_COUNT = 7
 const NAV_STAGGER_MS = 80
 const NAV_TRANSITION_MS = 240
 const NAV_PHASE_MS = NAV_TRANSITION_MS + NAV_STAGGER_MS * (NAV_ITEM_COUNT - 1)
@@ -91,6 +96,7 @@ const onClickAbout = () => scrollToSection('about-me-section')
 const onClickSkills = () => scrollToSection('skills-section')
 const onClickAchievement = () => scrollToSection('achievement-section')
 const onClickPortofolio = () => scrollToSection('portofolio-section')
+const onClickWriteups = () => scrollToSection('writeups-section')
 const onClickCv = () => scrollToSection('cv-section')
 
 onMounted(() => {
@@ -101,6 +107,20 @@ onUnmounted(() => {
   window.removeEventListener('pointerdown', onGlobalPointerDown)
   clearNavPhaseTimer()
 })
+
+// The writeup reader is a full-page overlay: lock the page scroll while it is
+// open, and when we return home drop the user back on the writeup section.
+watch(
+  () => route.value.name !== 'home',
+  async (overlayOpen) => {
+    document.body.classList.toggle('writeups-open', overlayOpen)
+    if (!overlayOpen) {
+      await nextTick()
+      scrollToSection('writeups-section')
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -117,6 +137,8 @@ onUnmounted(() => {
   <div class="section-gap" aria-hidden="true"></div>
   <Portofolio />
   <div class="section-gap" aria-hidden="true"></div>
+  <Writeups />
+  <div class="section-gap" aria-hidden="true"></div>
   <Cv />
   <div class="floating-logo-wrapper">
     <Logo class="floating-logo" aria-hidden="true" @click.stop="toggleFloatingNav" />
@@ -129,27 +151,27 @@ onUnmounted(() => {
       }"
       aria-label="Navbar"
     >
-      <button class="floating-nav-button floating-nav-home" type="button" style="--nav-seq: 5" aria-label="Home" title="HOME" @click="onClickHome">
+      <button class="floating-nav-button floating-nav-home" type="button" style="--nav-seq: 6" aria-label="Home" title="HOME" @click="onClickHome">
         <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 11.2 12 4l8 7.2" />
           <path d="M6.5 10v9h11v-9" />
           <path d="M10 19v-5h4v5" />
         </svg>
       </button>
-      <button class="floating-nav-button floating-nav-about" type="button" style="--nav-seq: 4" aria-label="About Me" title="About Me" @click="onClickAbout">
+      <button class="floating-nav-button floating-nav-about" type="button" style="--nav-seq: 5" aria-label="About Me" title="About Me" @click="onClickAbout">
         <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="8" r="3.4" />
           <path d="M5.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2" />
         </svg>
       </button>
-      <button class="floating-nav-button floating-nav-skills" type="button" style="--nav-seq: 3" aria-label="Skills" title="Skills" @click="onClickSkills">
+      <button class="floating-nav-button floating-nav-skills" type="button" style="--nav-seq: 4" aria-label="Skills" title="Skills" @click="onClickSkills">
         <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="m8 8-4 4 4 4" />
           <path d="m16 8 4 4-4 4" />
           <path d="M13.5 5.5 10.5 18.5" />
         </svg>
       </button>
-      <button class="floating-nav-button floating-nav-achievement" type="button" style="--nav-seq: 2" aria-label="Achievement" title="Achievement" @click="onClickAchievement">
+      <button class="floating-nav-button floating-nav-achievement" type="button" style="--nav-seq: 3" aria-label="Achievement" title="Achievement" @click="onClickAchievement">
         <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="9" r="5" />
           <path d="M8.6 13.2 7 21l5-2.6L17 21l-1.6-7.8" />
@@ -163,6 +185,13 @@ onUnmounted(() => {
           <path d="M11 12.5h2v2h-2z" />
         </svg>
       </button>
+      <button class="floating-nav-button floating-nav-writeups" type="button" style="--nav-seq: 2" aria-label="Writeup" title="Writeup" @click="onClickWriteups">
+        <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6.5 3.5h8l4 4v13h-12z" />
+          <path d="M14.5 3.5v4h4" />
+          <path d="M9 12.4h6M9 15.4h6M9 9.4h3.4" />
+        </svg>
+      </button>
       <button class="floating-nav-button floating-nav-cv" type="button" style="--nav-seq: 0" aria-label="CV" title="CV" @click="onClickCv">
         <svg class="floating-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6.5 3.5h7l4 4v13h-11z" />
@@ -172,6 +201,7 @@ onUnmounted(() => {
       </button>
     </div>
   </div>
+  <WriteupsPage v-if="route.name !== 'home'" />
 </template>
 
 <style scoped>
@@ -227,10 +257,13 @@ onUnmounted(() => {
   transition-duration: 240ms;
   transition-timing-function: ease;
   transition-delay: 0ms;
-  /* Ring layout: every button sits on one circle around the logo. */
-  --ring: 200cqw;
-  width: 62cqw;
-  height: 62cqw;
+  /* Ring layout: every button sits on one circle around the logo.
+     Seven buttons need a wider ring and/or smaller dots so neighbouring
+     dots (spaced ~12.86 deg apart => chord 0.224 x ring) never overlap:
+     the rule of thumb is ring >= 4.47 x dotWidth. */
+  --ring: 235cqw;
+  width: 50cqw;
+  height: 50cqw;
 }
 
 /* Minimal line-art icons that match the terminal / monospace theme. */
@@ -266,30 +299,36 @@ onUnmounted(() => {
 
 /* Buttons fan out along a quarter-circle around the logo (the "ring").
    Each position is the precomputed cos/sin of its angle x --ring, so the
-   whole fan keeps its proportions at any aspect ratio. */
+   whole fan keeps its proportions at any aspect ratio. Angles are spaced
+   evenly over the quarter for the current 7-button layout. */
 .floating-nav-home {
   left: calc(50% + 0.174 * var(--ring));
   top: calc(50% - 0.985 * var(--ring));
 }
 
 .floating-nav-about {
-  left: calc(50% - 0.174 * var(--ring));
-  top: calc(50% - 0.985 * var(--ring));
+  left: calc(50% - 0.115 * var(--ring));
+  top: calc(50% - 0.993 * var(--ring));
 }
 
 .floating-nav-skills {
-  left: calc(50% - 0.5 * var(--ring));
-  top: calc(50% - 0.866 * var(--ring));
+  left: calc(50% - 0.397 * var(--ring));
+  top: calc(50% - 0.918 * var(--ring));
 }
 
 .floating-nav-achievement {
-  left: calc(50% - 0.766 * var(--ring));
-  top: calc(50% - 0.643 * var(--ring));
+  left: calc(50% - 0.643 * var(--ring));
+  top: calc(50% - 0.766 * var(--ring));
+}
+
+.floating-nav-writeups {
+  left: calc(50% - 0.836 * var(--ring));
+  top: calc(50% - 0.547 * var(--ring));
 }
 
 .floating-nav-portofolio {
-  left: calc(50% - 0.94 * var(--ring));
-  top: calc(50% - 0.342 * var(--ring));
+  left: calc(50% - 0.958 * var(--ring));
+  top: calc(50% - 0.287 * var(--ring));
 }
 
 .floating-nav-cv {
@@ -312,9 +351,9 @@ onUnmounted(() => {
   }
 
   .floating-nav-button {
-    --ring: 175cqw;
-    width: 54cqw;
-    height: 54cqw;
+    --ring: 235cqw;
+    width: 50cqw;
+    height: 50cqw;
   }
 }
 </style>

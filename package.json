@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "gen:writeups": "node scripts/gen-writeups.mjs",
+    "build": "node scripts/gen-writeups.mjs && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -13,6 +14,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.5",
+    "marked": "^15.0.12",
     "vite": "^8.0.4"
   }
 }
