@@ -54,13 +54,17 @@ const previews = [
 ]
 
 const activeSlide = ref(0)
+const dragOffset = ref(0)
+const isDragging = ref(false)
+const previewRef = ref(null)
 const descriptionScrollProgress = ref(0)
 const descriptionScrollRef = ref(null)
 let autoplayId = null
+let dragPointerId = null
 let dragStartX = 0
-let dragDeltaX = 0
+let dragStartY = 0
+let dragAxis = null
 let hasDragged = false
-let isDragging = false
 
 const goToSlide = (index) => {
   activeSlide.value = (index + previews.length) % previews.length
@@ -88,54 +92,96 @@ const startAutoplay = () => {
   }, 3200)
 }
 
-const getPointerX = (event) => {
-  if ('touches' in event && event.touches.length > 0) {
-    return event.touches[0].clientX
-  }
-
-  if ('changedTouches' in event && event.changedTouches.length > 0) {
-    return event.changedTouches[0].clientX
-  }
-
-  return event.clientX
-}
-
-const onDragStart = (event) => {
-  isDragging = true
-  dragStartX = getPointerX(event)
-  dragDeltaX = 0
-  hasDragged = false
-  stopAutoplay()
-}
-
-const onDragMove = (event) => {
-  if (!isDragging) {
+// Swipe/drag with Pointer Events (covers mouse + touch + pen in one path).
+// The track follows the pointer live, then snaps to the previous/next slide
+// on release. `draggable="false"` on the images plus `touch-action: pan-y`
+// on the viewport stop the browser from hijacking the gesture as an
+// image drag (mouse) or a horizontal page pan (touch).
+const onPointerDown = (event) => {
+  if (event.pointerType === 'mouse' && event.button !== 0) {
     return
   }
 
-  dragDeltaX = getPointerX(event) - dragStartX
-  if (Math.abs(dragDeltaX) > 8) {
+  if (event.target instanceof Element && event.target.closest('.portofolio-slider-bar')) {
+    return
+  }
+
+  isDragging.value = true
+  dragPointerId = event.pointerId
+  dragStartX = event.clientX
+  dragStartY = event.clientY
+  dragAxis = null
+  dragOffset.value = 0
+  hasDragged = false
+  stopAutoplay()
+
+  // Capture so the swipe keeps tracking even if the pointer leaves the box.
+  // Guarded: synthetic/edge-case events can throw here, and a failed capture
+  // must never abort the drag setup.
+  try {
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+  } catch {
+    /* pointer capture unavailable — dragging still works via the element events */
+  }
+}
+
+const onPointerMove = (event) => {
+  if (!isDragging.value || event.pointerId !== dragPointerId) {
+    return
+  }
+
+  const deltaX = event.clientX - dragStartX
+  const deltaY = event.clientY - dragStartY
+
+  // Lock to an axis on first movement so a mostly-vertical gesture scrolls
+  // the page instead of nudging the slider.
+  if (dragAxis === null) {
+    if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) {
+      return
+    }
+    dragAxis = Math.abs(deltaX) >= Math.abs(deltaY) ? 'x' : 'y'
+  }
+
+  if (dragAxis !== 'x') {
+    return
+  }
+
+  dragOffset.value = deltaX
+  if (Math.abs(deltaX) > 8) {
     hasDragged = true
   }
 }
 
-const onDragEnd = () => {
-  if (!isDragging) {
+const endDrag = (event) => {
+  if (!isDragging.value) {
     return
   }
 
-  isDragging = false
+  if (event && dragPointerId !== null && event.pointerId !== dragPointerId) {
+    return
+  }
 
-  if (Math.abs(dragDeltaX) >= 40) {
-    if (dragDeltaX < 0) {
+  const wasHorizontal = dragAxis === 'x'
+  isDragging.value = false
+
+  if (wasHorizontal) {
+    const width = previewRef.value?.clientWidth || 0
+    const threshold = Math.max(40, width * 0.12)
+
+    if (dragOffset.value <= -threshold) {
       nextSlide()
-    } else {
+    } else if (dragOffset.value >= threshold) {
       prevSlide()
     }
   }
 
-  dragDeltaX = 0
-  startAutoplay()
+  dragOffset.value = 0
+  dragAxis = null
+  dragPointerId = null
+
+  if (wasHorizontal) {
+    startAutoplay()
+  }
 }
 
 const onPreviewClick = (event) => {
@@ -208,18 +254,16 @@ onUnmounted(() => {
       <p class="portofolio-title">Past Project</p>
 
       <div
+        ref="previewRef"
         class="portofolio-preview"
         aria-label="Project preview area"
         @click="onPreviewClick"
-        @mousedown="onDragStart"
-        @mousemove="onDragMove"
-        @mouseup="onDragEnd"
-        @mouseleave="onDragEnd"
-        @touchstart="onDragStart"
-        @touchmove="onDragMove"
-        @touchend="onDragEnd"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="endDrag"
+        @pointercancel="endDrag"
       >
-        <div class="portofolio-preview-track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
+        <div class="portofolio-preview-track" :class="{ 'is-dragging': isDragging }" :style="{ transform: `translateX(calc(-${activeSlide * 100}% + ${dragOffset}px))` }">
           <img
             v-for="(item, index) in previews"
             :key="item.alt"
@@ -227,6 +271,7 @@ onUnmounted(() => {
             :src="item.src"
             :alt="item.alt"
             :loading="index === 0 ? 'eager' : 'lazy'"
+            draggable="false"
           />
         </div>
 
@@ -322,6 +367,14 @@ onUnmounted(() => {
   overflow: hidden;
   border-radius: 0.4cqw;
   cursor: pointer;
+  /* Let the browser handle vertical page scroll, we own horizontal swipes. */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.portofolio-preview:active {
+  cursor: grabbing;
 }
 
 .portofolio-preview-track {
@@ -329,6 +382,12 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   transition: transform 0.55s ease;
+  will-change: transform;
+}
+
+/* While dragging, follow the pointer 1:1 with no easing. */
+.portofolio-preview-track.is-dragging {
+  transition: none;
 }
 
 .portofolio-preview-image {
@@ -337,6 +396,9 @@ onUnmounted(() => {
   height: 100%;
   display: block;
   object-fit: cover;
+  /* Block the native HTML5 image drag that otherwise eats mouse swipes. */
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 .portofolio-slider-bar {
