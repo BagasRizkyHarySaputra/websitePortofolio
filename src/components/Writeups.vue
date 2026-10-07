@@ -22,13 +22,14 @@ useScrollReveal(rootEl, '.writeups-item', {
       <p class="writeups-title">Writeup</p>
       <div class="writeups-rule" aria-hidden="true"></div>
 
-      <ul class="writeups-list">
-        <li
-          v-for="(item, index) in writeups"
-          :key="item.slug"
-          class="writeups-item"
-          :style="{ '--wu-index': index }"
-        >
+      <div class="writeups-panel">
+        <ul class="writeups-list">
+          <li
+            v-for="(item, index) in writeups"
+            :key="item.slug"
+            class="writeups-item"
+            :style="{ '--wu-index': index }"
+          >
           <article class="writeups-card">
             <a class="writeups-card-link" :href="`#/writeups/${item.slug}`">
               <span class="writeups-card-index">{{ String(index + 1).padStart(2, '0') }}</span>
@@ -61,6 +62,7 @@ useScrollReveal(rootEl, '.writeups-item', {
           </article>
         </li>
       </ul>
+      </div>
     </div>
   </section>
 </template>
@@ -122,32 +124,34 @@ useScrollReveal(rootEl, '.writeups-item', {
   border-top: 0.15625cqw solid #ffffff;
 }
 
-.writeups-list {
+.writeups-panel {
   position: absolute;
   left: 10%;
   top: 24.07407%;
   width: 80%;
-  height: 62%;
+}
+
+.writeups-list {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 2.2cqw;
+  grid-auto-rows: auto;
+  gap: 1.3cqw;
 }
 
 .writeups-item {
   display: flex;
 
   opacity: 0;
-  transform: translateY(1.6cqw);
+  transform: translateY(1.2cqw);
   transition: opacity 0.45s ease, transform 0.45s ease;
   transition-delay: calc(var(--wu-index, 0) * 70ms);
 }
 
 .writeups-item.reveal-from-above {
-  transform: translateY(-1.6cqw);
+  transform: translateY(-1.2cqw);
 }
 
 .writeups-item.is-in {
@@ -160,7 +164,7 @@ useScrollReveal(rootEl, '.writeups-item', {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1.7cqw 1.9cqw;
+  padding: 0.85cqw 1.05cqw;
   border: 0.15625cqw solid rgb(255 255 255 / 28%);
   border-radius: 0.5cqw;
   background: rgb(255 255 255 / 3%);
@@ -176,7 +180,7 @@ useScrollReveal(rootEl, '.writeups-item', {
 .writeups-card-link {
   display: flex;
   flex-direction: column;
-  gap: 0.9cqw;
+  gap: 0.35cqw;
   flex: 1;
   min-height: 0;
   color: inherit;
@@ -190,13 +194,13 @@ useScrollReveal(rootEl, '.writeups-item', {
 }
 
 .writeups-card-index {
-  font-size: 1.7cqw;
+  font-size: 1cqw;
   color: rgb(255 255 255 / 45%);
   letter-spacing: 0.08em;
 }
 
 .writeups-card-title {
-  font-size: 2.7cqw;
+  font-size: 1.6cqw;
   color: #ffffff;
 }
 
@@ -209,31 +213,35 @@ useScrollReveal(rootEl, '.writeups-item', {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.7cqw;
+  gap: 0.4cqw;
 }
 
 .writeups-tag {
-  font-size: 1.5cqw;
+  font-size: 0.92cqw;
   color: #ffffff;
   border: 0.15625cqw solid rgb(255 255 255 / 40%);
   border-radius: 0.3cqw;
-  padding: 0.25cqw 0.8cqw;
+  padding: 0.12cqw 0.5cqw;
   text-transform: lowercase;
 }
 
 .writeups-count {
-  font-size: 1.5cqw;
+  font-size: 0.92cqw;
   color: rgb(255 255 255 / 55%);
 }
 
 .writeups-card-blurb {
-  font-size: 1.65cqw;
-  line-height: 1.2;
+  font-size: 0.95cqw;
+  line-height: 1.15;
   color: rgb(255 255 255 / 70%);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .writeups-card-cta {
-  font-size: 1.7cqw;
+  font-size: 1.05cqw;
   color: rgb(255 255 255 / 60%);
   text-decoration: none;
   transition: color 0.2s ease, transform 0.2s ease;
@@ -250,11 +258,11 @@ useScrollReveal(rootEl, '.writeups-item', {
   justify-content: space-between;
   gap: 1.5cqw;
   margin-top: auto;
-  padding-top: 0.8cqw;
+  padding-top: 0.45cqw;
 }
 
 .writeups-card-source {
-  font-size: 1.5cqw;
+  font-size: 0.92cqw;
   color: rgb(255 255 255 / 55%);
   text-decoration: none;
   white-space: nowrap;
@@ -310,13 +318,15 @@ useScrollReveal(rootEl, '.writeups-item', {
     border-top-width: 0.2cqw;
   }
 
-  .writeups-list {
+  .writeups-panel {
     position: relative;
     left: auto;
     top: auto;
     width: 80.67713%;
-    height: auto;
     margin: 15vh auto 0;
+  }
+
+  .writeups-list {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
     gap: 3.2cqw;

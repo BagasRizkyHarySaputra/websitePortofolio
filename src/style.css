@@ -34,6 +34,7 @@ body {
 .skills-stage,
 .achievement-stage,
 .portofolio-stage,
+.writeups-stage,
 .cv-stage {
   transform-origin: center;
   transform: scale(var(--ui-scale));
